@@ -9,6 +9,7 @@ interface DropdownLink {
 }
 
 interface DropdownProps {
+  sidebarIsCollapsed: boolean;
   section: {
     id: string;
     title: string;
@@ -17,7 +18,7 @@ interface DropdownProps {
   links: DropdownLink[];
 }
 
-export default function Dropdown({ section, links }: DropdownProps) {
+export default function Dropdown({ sidebarIsCollapsed, section, links }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
@@ -29,10 +30,11 @@ export default function Dropdown({ section, links }: DropdownProps) {
       <div
         className="flex cursor-pointer items-center justify-between gap-2 border-b p-2 hover:bg-slate-200 dark:border-zinc-600 dark:hover:bg-slate-900/50"
         onClick={handleClick}
+        title={section.title}
       >
         <h2 className="flex items-center justify-center gap-2 py-1">
           {section.icon}
-          {section.title}
+          {!sidebarIsCollapsed ? section.title : ""}
         </h2>
         {isOpen ? (
           <svg
@@ -65,10 +67,11 @@ export default function Dropdown({ section, links }: DropdownProps) {
           <Link
             key={uuid()}
             href={link.href}
-            className="flex items-center justify-between gap-2 border-b border-light-500 p-2 hover:bg-indigo-400/50 dark:border-dark-50/40 dark:hover:bg-slate-800/80"
+            title={link.title}
+            className={`${sidebarIsCollapsed ? "justify-center" : "justify-between"} flex items-center gap-2 border-b border-light-500 p-2 hover:bg-indigo-400/50 dark:border-dark-50/40 dark:hover:bg-slate-800/80`}
           >
             {link.icon}
-            <h3>{link.title}</h3>
+            {!sidebarIsCollapsed && <h3>{link.title}</h3>}
           </Link>
         ))}
       </div>
