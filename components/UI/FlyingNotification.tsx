@@ -1,36 +1,29 @@
 import ReactDOM from "react-dom";
 import { AppNotification } from "@/types/interfaces";
-import Router from "next/router";
+import { useAtom } from "jotai";
+import { notificationAtom } from "../store/store";
 
-interface NotificationProps {
-  notification: {
-    message: string;
-    type: "error" | "success" | "";
-    setStateFn: React.Dispatch<React.SetStateAction<AppNotification>>;
-  };
-}
-
-export default function FlyingNotification({
-  notification: { message, type, setStateFn },
-}: NotificationProps) {
+export default function FlyingNotification() {
   const notificationInitialState: AppNotification = {
     message: "",
     type: "",
   };
 
+  const [notification, setNotification] = useAtom(notificationAtom);
+
   const handleClear = () => {
-    setStateFn(notificationInitialState);
+    setNotification(notificationInitialState);
   };
 
   return ReactDOM.createPortal(
     <div
       className={`z-20 flex w-full items-center px-4 py-2 text-center font-medium ${
-        type === "error"
+        notification.type === "error"
           ? "bg-red-300 text-red-900"
           : "bg-green-300 text-green-800"
       }`}
     >
-      <p className="mx-auto">{message}</p>
+      <p className="mx-auto">{notification.message}</p>
       <span className="cursor-pointer hover:text-white" onClick={handleClear}>
         X
       </span>

@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import Router from "next/router";
 import Link from "next/link";
 
+import {useAtom} from 'jotai';
+import { notificationAtom } from "@/components/store/store";
+
 import { GetServerSideProps } from "next";
 import { AppDialog, AppNotification, UserInfo } from "@/types/interfaces";
 
@@ -21,10 +24,7 @@ interface RowActionsProps {
   authUser: UserInfo;
 }
 const RowActions = ({ user }: RowActionsProps) => {
-  const notificationInitialState: AppNotification = { message: "", type: "" };
-  const [notification, setNotification] = useState<AppNotification>(
-    notificationInitialState
-  );
+  const [notification, setNotification] = useAtom(notificationAtom);
 
   const dialogInitialState: AppDialog = {
     isOpen: false,
@@ -63,6 +63,8 @@ const RowActions = ({ user }: RowActionsProps) => {
 
       const data = await response.json();
       Router.replace(Router.asPath);
+      setNotification({ type: "success", message: data.message });
+
     } catch (error) {
       setNotification({ type: "error", message: error.message });
       setDialog(dialogInitialState);
@@ -83,6 +85,8 @@ const RowActions = ({ user }: RowActionsProps) => {
 
       const data = await response.json();
       Router.replace(Router.asPath);
+      setNotification({ type: "success", message: data.message });
+
     } catch (error) {
       setNotification({ type: "error", message: error.message });
       setDialog(dialogInitialState);
@@ -231,11 +235,7 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
       ),
     }),
   ];
-
-  const notificationInitialState: AppNotification = { message: "", type: "" };
-  const [notification, setNotification] = useState<AppNotification>(
-    notificationInitialState
-  );
+  const [notification, setNotification] = useAtom<AppNotification>(notificationAtom);
 
   return (
     <>
@@ -252,9 +252,7 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
         <Table<User> data={users} columns={columns} />
       </div>
       {notification.message && (
-        <FlyingNotification
-          notification={{ ...notification, setStateFn: setNotification }}
-        />
+        <FlyingNotification />
       )}
     </>
   );

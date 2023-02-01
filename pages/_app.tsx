@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import { SessionProvider } from "next-auth/react";
+import { Provider } from "jotai";
 
 import type { AppProps } from "next/app";
 interface CustomAppProps extends Omit<AppProps, "Component"> {
@@ -18,9 +19,11 @@ export default function App({ Component, pageProps }: CustomAppProps) {
 
   return (
     <SessionProvider session={pageProps.session}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <Provider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </Provider>
     </SessionProvider>
   );
 }
