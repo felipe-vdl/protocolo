@@ -35,18 +35,21 @@ const UserCreate = ({ user }: UserCreateProps) => {
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-    console.log(form);
-
     try {
       if (Object.values(form).every((entry) => entry.trim().length > 0)) {
         setNotification(notificationInitialState);
         setIsLoading(true);
-        const response = await fetch("/api/user/update", {
+        const response = await fetch(`/api/user/${user.id}/update`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...form, id: user.id }),
+          body: JSON.stringify({
+            id: user.id,
+            name: form.name,
+            email: form.email,
+            role: form.role,
+          }),
         });
 
         if (!response.ok) {
@@ -56,8 +59,9 @@ const UserCreate = ({ user }: UserCreateProps) => {
 
         const data = await response.json();
         setNotification({ type: "success", message: data.message });
-        setForm(formInitalState);
+        setForm(data.updatedUser);
         setIsLoading(false);
+
       } else {
         setNotification({
           type: "error",

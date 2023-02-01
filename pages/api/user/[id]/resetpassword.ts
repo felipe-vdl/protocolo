@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Message } from "@/types/interfaces";
 
-export default async function authUserHandler(
+export default async function ResetPasswordHandler(
   req: NextApiRequest,
   res: NextApiResponse<Message>
 ) {
