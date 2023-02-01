@@ -16,6 +16,7 @@ interface ChangePasswordProps {
 }
 
 const ChangePasswordPage = ({ user }: ChangePasswordProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const notificationInitialState: AppNotification = { message: "", type: "" };
   const [notification, setNotification] = useState<AppNotification>(notificationInitialState)
   const formInitalState = {
@@ -36,6 +37,7 @@ const ChangePasswordPage = ({ user }: ChangePasswordProps) => {
     try {
       if (Object.values(form).every(entry => entry.trim().length > 0)) {
         setNotification(notificationInitialState);
+        setIsLoading(true);
         const response = await fetch('/api/user/changepassword', {
           method: "POST",
           headers: {
@@ -52,12 +54,14 @@ const ChangePasswordPage = ({ user }: ChangePasswordProps) => {
         const data = await response.json();
         setNotification({ type: "success", message: data.message });
         setForm(formInitalState);
+        setIsLoading(false);
 
       } else {
         setNotification({
           type: "error",
           message: "Preencha as informações."
         });
+        setIsLoading(false);
       }
       
     } catch (error) {
@@ -96,7 +100,9 @@ const ChangePasswordPage = ({ user }: ChangePasswordProps) => {
             <input type="password" onChange={handleChange} name="newPassword" value={form.newPassword} className="px-2 bg-transparent border-b border-zinc-500 pb-1 outline-none" placeholder="Nova Senha" />
             <input type="password" onChange={handleChange} name="confirmNewPassword" value={form.confirmNewPassword} className="px-2 bg-transparent border-b border-zinc-500 pb-1 outline-none" placeholder="Confirmar Nova Senha" />
           </div>
-          <button className="text-xl bg-roxo rounded-[10px] p-1 hover:bg-indigo-500 font-light">Aplicar</button>
+          <button disabled={isLoading} className="disabled:bg-indigo-400 text-xl bg-roxo rounded-[10px] p-1 hover:bg-indigo-500 font-light">
+            {isLoading ? "Aplicando..." : "Aplicar" }
+          </button>
         </form>
       </div>
     </>

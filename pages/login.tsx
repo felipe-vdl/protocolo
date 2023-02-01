@@ -7,6 +7,8 @@ import Router from 'next/router';
 import { AppNotification } from "@/types/interfaces";
 
 const LoginPage = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const notificationInitialState: AppNotification = {
     type: '',
     message: ''
@@ -21,8 +23,10 @@ const LoginPage = () => {
 
   const handleSubmit = async evt => {
     evt.preventDefault();
-    setNotification(notificationInitialState);
     if (form.email.trim().length && form.password.trim().length) {
+      setNotification(notificationInitialState);
+      setIsLoading(true);
+
       const res = await signIn('credentials', {
         email: form.email,
         password: form.password,
@@ -31,8 +35,11 @@ const LoginPage = () => {
 
       if (!res.error) {
         Router.push('/');
+        setIsLoading(false);
+
       } else {
         setNotification({ message: res.error, type: 'error' });
+        setIsLoading(false);
       }
     } else {
       setNotification({ message: !form.email.trim().length ? "Informe um E-mail" : "Informe uma senha", type: 'error' });
@@ -71,7 +78,9 @@ const LoginPage = () => {
             autoComplete="nope"
           />
         </div>
-        <button className="bg-roxo w-1/2 mx-auto rounded py-1 hover:bg-indigo-900 text-white">Login</button>
+        <button disabled={isLoading} className="disabled:bg-indigo-400 bg-roxo w-1/2 mx-auto rounded py-1 hover:bg-indigo-900 text-white">
+          {isLoading ? "Carregando..." : "Login"}
+        </button>
       </form>
     </div>
   );

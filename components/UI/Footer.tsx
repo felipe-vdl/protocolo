@@ -8,13 +8,13 @@ export default function Footer() {
           © 2023 Equipe de Desenvolvimento de Sistemas
         </li>
         <li>
-          <a href="http://devs.mesquita.rj.gov.br/" target="_blank"><Fogo className="inline" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" /></a> Subsecretaria de Tecnologia da Informação — Prefeitura Municipal de Mesquita
+          <a rel="noreferrer" href="http://devs.mesquita.rj.gov.br/" target="_blank"><Fogo className="inline" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" /></a> Subsecretaria de Tecnologia da Informação — Prefeitura Municipal de Mesquita
         </li>
         <li>
           Rua Arthur de Oliveira Vecchi, 120 - Centro - Mesquita - RJ - CEP: 26553-080
         </li>
         <li>
-          <a href="https://lgpd.mesquita.rj.gov.br/?page_id=43" target="_blank">Política de Privacidade</a>
+          <a rel="noreferrer" href="https://lgpd.mesquita.rj.gov.br/?page_id=43" target="_blank">Política de Privacidade</a>
         </li>
       </ul>
     </footer>

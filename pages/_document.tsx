@@ -6,7 +6,6 @@ export default function Document() {
       <Head />
       <body>
         <div id="modal" />
-        <div id="notifications" />
         <Main />
         <NextScript />
       </body>

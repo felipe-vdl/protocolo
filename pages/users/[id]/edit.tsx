@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../api/auth/[...nextauth]';
+import { authOptions } from '../../api/auth/[...nextauth]';
 
 import { prisma } from '@/db';
 import { Role } from '@prisma/client';
@@ -9,19 +9,20 @@ import { UserInfo } from '@/types/interfaces';
 
 import { AppNotification } from '@/types/interfaces';
 import React, { useState } from 'react';
+import Link from 'next/dist/client/link';
 
 interface UserCreateProps {
   user: UserInfo
 }
 
-const UserCreate = ({user}: UserCreateProps) => {
+const UserCreate = ({ user }: UserCreateProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const notificationInitialState: AppNotification = { message: "", type: "" };
   const [notification, setNotification] = useState<AppNotification>(notificationInitialState)
   const formInitalState = {
-    name: "",
-    email: "",
-    role: ""
+    name: user.name,
+    email: user.email,
+    role: user.role
   }
 
   const [form, setForm] = useState<{
@@ -38,12 +39,12 @@ const UserCreate = ({user}: UserCreateProps) => {
       if (Object.values(form).every(entry => entry.trim().length > 0)) {
         setNotification(notificationInitialState);
         setIsLoading(true);
-        const response = await fetch('/api/user/register', {
+        const response = await fetch('/api/user/update', {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(form),
+          body: JSON.stringify({ ...form, id: user.id }),
         })
 
         if (!response.ok) {
@@ -91,7 +92,7 @@ const UserCreate = ({user}: UserCreateProps) => {
       </Head>
       <div className="shadow shadow-black/20 w-1/3 m-auto flex flex-col items-center text-white dark:bg-dark-500 bg-light-500 rounded-[12px]">
         <div className="bg-dourado rounded-t-[12px] w-full text-center py-1">
-          <h2 className="text-2xl font-light">Novo Usuário</h2>
+          <h2 className="text-2xl font-light">Editar Usuário</h2>
         </div>
         <form className="flex flex-col gap-8 p-4 w-full pt-8" onSubmit={handleSubmit}>
           {notification.message &&
@@ -110,9 +111,17 @@ const UserCreate = ({user}: UserCreateProps) => {
               ))}
             </select>
           </div>
-          <button disabled={isLoading} className="disabled:bg-indigo-400 text-xl bg-roxo rounded-[10px] p-1 hover:bg-indigo-700 font-light">
-            { isLoading ? "Criando usuário..." : "Criar" }
-          </button>
+          <div className='flex w-full gap-8'>
+            <button disabled={isLoading} className="flex-1 disabled:bg-indigo-400 text-xl bg-roxo rounded-[10px] p-1 hover:bg-indigo-700 font-light">
+              { isLoading ? "Editando usuário..." : "Editar" }
+            </button>
+            <Link
+              href="/users"
+              className="flex-1 disabled:bg-indigo-400 text-xl text-center bg-zinc-500 rounded-[10px] p-1 hover:bg-zinc-400 font-light"
+            >
+              Cancelar
+            </Link>
+          </div>
         </form>
       </div>
     </>
@@ -131,20 +140,22 @@ export const getServerSideProps: GetServerSideProps<UserCreateProps> = async (co
       props: {}
     }
   } else {
-    const authUser = await prisma.user.findFirst({
+    
+    const id = +context.params.id;;
+    const user = await prisma.user.findFirst({
       where: {
-        email: session.user.email,
+        id: id,
       }
     });
 
     return {
       props: {
         user: {
-          id: authUser.id,
-          name: authUser.name,
-          email: authUser.email,
-          role: authUser.role,
-          is_enabled: authUser.is_enabled
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          is_enabled: user.is_enabled
         }
       }
     }
