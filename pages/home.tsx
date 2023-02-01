@@ -2,29 +2,29 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 
 const HomePage = () => {
-  return <div>HomePage</div>
-}
+  return <div>HomePage</div>;
+};
 
-export const getServerSideProps = async context => {
+export const getServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (!session) {
     return {
       redirect: {
         permanent: false,
-        destination: "/login"
+        destination: "/login",
       },
-      props: {}
-    }
+      props: {},
+    };
   } else {
     return {
       redirect: {
         permanent: false,
-        destination: "/"
-      }
-    }
+        destination: "/",
+      },
+    };
   }
-}
+};
 
 HomePage.layout = "regular";
 export default HomePage;

@@ -3,13 +3,13 @@ import Footer from "../UI/Footer";
 
 export default function RegularLayout({ children }) {
   return (
-    <div className="flex flex-col min-h-screen bg-mesquita">
+    <div className="bg-mesquita flex min-h-screen flex-col">
       <div id="notifications" />
       <Navbar />
-      <main className="flex-1 flex bg-light-900 text-light-50 dark:bg-dark-900 dark:text-dark-50">
+      <main className="flex flex-1 bg-light-900 text-light-50 dark:bg-dark-900 dark:text-dark-50">
         {children}
       </main>
       <Footer />
     </div>
-  )
+  );
 }

@@ -10,16 +10,16 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   FilterFn,
-  SortingFn
+  SortingFn,
 } from "@tanstack/react-table";
 
-declare module '@tanstack/table-core' {
+declare module "@tanstack/table-core" {
   interface SortingFns {
-    stringDate: SortingFn<unknown>
+    stringDate: SortingFn<unknown>;
   }
   interface FilterFns {
-    numToString: FilterFn<unknown>,
-    customGlobalFilter: FilterFn<unknown>
+    numToString: FilterFn<unknown>;
+    customGlobalFilter: FilterFn<unknown>;
   }
 }
 
@@ -87,12 +87,12 @@ export default function Table<T>({
   });
 
   return (
-    <div className="w-full p-2 flex flex-col shadow shadow-black/30">
-      <div className="mb-2 mr-auto flex items-center justify-between w-full">
+    <div className="flex w-full flex-col p-2 shadow shadow-black/30">
+      <div className="mb-2 mr-auto flex w-full items-center justify-between">
         <input
           value={globalFilter ?? ""}
           onChange={(evt) => setGlobalFilter(String(evt.target.value))}
-          className="p-2 rounded-[8px] text-light-50 border"
+          className="rounded-[8px] border p-2 text-light-50"
           placeholder="Filtrar todos..."
         />
         <div>
@@ -102,7 +102,7 @@ export default function Table<T>({
             onChange={(evt) => {
               table.setPageSize(+evt.target.value);
             }}
-            className="rounded p-1 border text-light-50"
+            className="rounded border p-1 text-light-50"
           >
             {[10, 25, 50, 100].map((pageSize) => (
               <option key={pageSize} value={pageSize}>
@@ -117,7 +117,10 @@ export default function Table<T>({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="border border-zinc-300 dark:border-zinc-500 p-3">
+                <th
+                  key={header.id}
+                  className="border border-zinc-300 p-3 dark:border-zinc-500"
+                >
                   <div
                     {...{
                       className: header.column.getCanSort()
@@ -144,7 +147,7 @@ export default function Table<T>({
                         header.column.setFilterValue(evt.target.value)
                       }
                       value={(header.column.getFilterValue() ?? "") as string}
-                      className="mt-1 w-full py-1 px-2 shadow rounded-[8px] text-light-50 font-normal border"
+                      className="mt-1 w-full rounded-[8px] border py-1 px-2 font-normal text-light-50 shadow"
                       placeholder={`Filtrar ${header.column.columnDef.header}`}
                     />
                   ) : null}
@@ -162,7 +165,10 @@ export default function Table<T>({
               } transition-all`}
             >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="border border-zinc-300 dark:border-zinc-600 p-3">
+                <td
+                  key={cell.id}
+                  className="border border-zinc-300 p-3 dark:border-zinc-600"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -170,10 +176,10 @@ export default function Table<T>({
           ))}
         </tbody>
       </table>
-      <div className="flex items-center gap-3 mt-2 text-sm">
+      <div className="mt-2 flex items-center gap-3 text-sm">
         <div className="flex gap-2">
           <button
-            className="border rounded p-1 bg-zinc-300 text-light-50 hover:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-100 disabled:cursor-not-allowed dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-800 dark:disabled:bg-zinc-500"
+            className="rounded border bg-zinc-300 p-1 text-light-50 hover:bg-zinc-400 disabled:cursor-not-allowed disabled:bg-zinc-400 disabled:text-zinc-100 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-800 dark:disabled:bg-zinc-500"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
@@ -195,21 +201,21 @@ export default function Table<T>({
             </svg>
           </button>
           <button
-            className="border rounded p-1 bg-zinc-300 text-light-50 hover:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-100 disabled:cursor-not-allowed dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-800 dark:disabled:bg-zinc-500"
+            className="rounded border bg-zinc-300 p-1 text-light-50 hover:bg-zinc-400 disabled:cursor-not-allowed disabled:bg-zinc-400 disabled:text-zinc-100 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-800 dark:disabled:bg-zinc-500"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             Anterior
           </button>
           <button
-            className="border rounded p-1 bg-zinc-300 text-light-50 hover:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-100 disabled:cursor-not-allowed dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-800 dark:disabled:bg-zinc-500"
+            className="rounded border bg-zinc-300 p-1 text-light-50 hover:bg-zinc-400 disabled:cursor-not-allowed disabled:bg-zinc-400 disabled:text-zinc-100 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-800 dark:disabled:bg-zinc-500"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             Próximo
           </button>
           <button
-            className="border rounded p-1 bg-zinc-300 text-light-50 hover:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-100 disabled:cursor-not-allowed dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-800 dark:disabled:bg-zinc-500"
+            className="rounded border bg-zinc-300 p-1 text-light-50 hover:bg-zinc-400 disabled:cursor-not-allowed disabled:bg-zinc-400 disabled:text-zinc-100 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-800 dark:disabled:bg-zinc-500"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >

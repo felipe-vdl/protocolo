@@ -22,7 +22,9 @@ interface RowActionsProps {
 }
 const RowActions = ({ user }: RowActionsProps) => {
   const notificationInitialState: AppNotification = { message: "", type: "" };
-  const [notification, setNotification] = useState<AppNotification>(notificationInitialState);
+  const [notification, setNotification] = useState<AppNotification>(
+    notificationInitialState
+  );
 
   const dialogInitialState: AppDialog = {
     isOpen: false,
@@ -50,7 +52,9 @@ const RowActions = ({ user }: RowActionsProps) => {
   const handleResetPassword = async () => {
     try {
       setDialog(dialogInitialState);
-      const response = await fetch(`/api/user/${user.id}/resetpassword`, { method: "POST" });
+      const response = await fetch(`/api/user/${user.id}/resetpassword`, {
+        method: "POST",
+      });
 
       if (!response.ok) {
         const error = await response.json();
@@ -59,17 +63,18 @@ const RowActions = ({ user }: RowActionsProps) => {
 
       const data = await response.json();
       Router.replace(Router.asPath);
-      
     } catch (error) {
       setNotification({ type: "error", message: error.message });
       setDialog(dialogInitialState);
     }
-  }
+  };
 
   const handleDeactivate = async () => {
     try {
       setDialog(dialogInitialState);
-      const response = await fetch(`/api/user/${user.id}/deactivate`, { method: "POST" });
+      const response = await fetch(`/api/user/${user.id}/deactivate`, {
+        method: "POST",
+      });
 
       if (!response.ok) {
         const error = await response.json();
@@ -78,19 +83,23 @@ const RowActions = ({ user }: RowActionsProps) => {
 
       const data = await response.json();
       Router.replace(Router.asPath);
-      
     } catch (error) {
       setNotification({ type: "error", message: error.message });
       setDialog(dialogInitialState);
     }
-  }
+  };
 
   return (
     <div className="flex gap-2">
       <button
-        className="ratio-square bg-blue-500 hover:bg-blue-700 transition-colors text-white p-2 rounded"
+        className="ratio-square rounded bg-blue-500 p-2 text-white transition-colors hover:bg-blue-700"
         title={`Restaurar senha do usuário.`}
-        onClick={() => handleConfirmation(handleResetPassword, "Você está prestes a restaurar a senha de um usuário.")}
+        onClick={() =>
+          handleConfirmation(
+            handleResetPassword,
+            "Você está prestes a restaurar a senha de um usuário."
+          )
+        }
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -108,7 +117,7 @@ const RowActions = ({ user }: RowActionsProps) => {
       </button>
       <Link
         href={`/users/${user.id}/edit`}
-        className="ratio-square bg-yellow-500 hover:bg-yellow-700 transition-colors text-white p-2 rounded"
+        className="ratio-square rounded bg-yellow-500 p-2 text-white transition-colors hover:bg-yellow-700"
         title={`Editar informações do usuário.`}
       >
         <svg
@@ -123,9 +132,14 @@ const RowActions = ({ user }: RowActionsProps) => {
       </Link>
       {user.is_enabled ? (
         <button
-          className="ratio-square bg-red-500 hover:bg-red-700 transition-colors text-white p-2 rounded"
+          className="ratio-square rounded bg-red-500 p-2 text-white transition-colors hover:bg-red-700"
           title={`Desativar o acesso do usuário.`}
-          onClick={() => handleConfirmation(handleDeactivate, "Você esta prestes a desativar o acesso de um usuário.")}
+          onClick={() =>
+            handleConfirmation(
+              handleDeactivate,
+              "Você esta prestes a desativar o acesso de um usuário."
+            )
+          }
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -139,9 +153,14 @@ const RowActions = ({ user }: RowActionsProps) => {
         </button>
       ) : (
         <button
-          className="ratio-square bg-green-500 hover:bg-green-700 transition-colors text-white p-2 rounded"
+          className="ratio-square rounded bg-green-500 p-2 text-white transition-colors hover:bg-green-700"
           title={`Ativar o acesso do usuário.`}
-          onClick={() => handleConfirmation(handleDeactivate, "Você esta prestes a ativar o acesso de um usuário.")}
+          onClick={() =>
+            handleConfirmation(
+              handleDeactivate,
+              "Você esta prestes a ativar o acesso de um usuário."
+            )
+          }
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -154,7 +173,7 @@ const RowActions = ({ user }: RowActionsProps) => {
           </svg>
         </button>
       )}
-      { dialog.isOpen && (
+      {dialog.isOpen && (
         <ConfirmationDialog
           accept={dialog.accept}
           reject={dialog.reject}
@@ -214,7 +233,9 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
   ];
 
   const notificationInitialState: AppNotification = { message: "", type: "" };
-  const [notification, setNotification] = useState<AppNotification>(notificationInitialState);
+  const [notification, setNotification] = useState<AppNotification>(
+    notificationInitialState
+  );
 
   return (
     <>
@@ -230,9 +251,11 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
       <div className="w-full">
         <Table<User> data={users} columns={columns} />
       </div>
-      { notification.message &&
-        <FlyingNotification notification={{...notification, setStateFn: setNotification}} />
-      }
+      {notification.message && (
+        <FlyingNotification
+          notification={{ ...notification, setStateFn: setNotification }}
+        />
+      )}
     </>
   );
 };
