@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Router from "next/router";
 import Link from "next/link";
 
-import {useAtom} from 'jotai';
+import { useAtom } from "jotai";
 import { notificationAtom } from "@/components/store/store";
 
 import { GetServerSideProps } from "next";
@@ -64,7 +64,6 @@ const RowActions = ({ user }: RowActionsProps) => {
       const data = await response.json();
       Router.replace(Router.asPath);
       setNotification({ type: "success", message: data.message });
-
     } catch (error) {
       setNotification({ type: "error", message: error.message });
       setDialog(dialogInitialState);
@@ -86,7 +85,6 @@ const RowActions = ({ user }: RowActionsProps) => {
       const data = await response.json();
       Router.replace(Router.asPath);
       setNotification({ type: "success", message: data.message });
-
     } catch (error) {
       setNotification({ type: "error", message: error.message });
       setDialog(dialogInitialState);
@@ -235,7 +233,8 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
       ),
     }),
   ];
-  const [notification, setNotification] = useAtom<AppNotification>(notificationAtom);
+  const [notification, setNotification] =
+    useAtom<AppNotification>(notificationAtom);
 
   return (
     <>
@@ -251,9 +250,7 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
       <div className="w-full">
         <Table<User> data={users} columns={columns} />
       </div>
-      {notification.message && (
-        <FlyingNotification />
-      )}
+      {notification.message && <FlyingNotification />}
     </>
   );
 };
