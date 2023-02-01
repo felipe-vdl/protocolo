@@ -38,9 +38,11 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
         <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
           protocolo.assunto
         }</span></p>
-        ${protocolo.anos_analise ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${
+        ${
           protocolo.anos_analise
-        }</span></p>` : ''}
+            ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
+            : ""
+        }
         <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.user.name.toUpperCase()}</span></p>
         <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
         <script>
@@ -115,14 +117,22 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
       sortingFn: "alphanumeric",
       filterFn: "includesString",
     }),
-    columnHelper.accessor((row) => row.created_at.toLocaleDateString("pt-br", { hour: "numeric", minute: "numeric", second: "numeric" }), {
-      id: "created_at",
-      header: "Data",
-      cell: (info) => info.getValue().split(" ")[0],
-      sortingFn: "stringDate",
-      sortDescFirst: true,
-      filterFn: "includesString",
-    }),
+    columnHelper.accessor(
+      (row) =>
+        row.created_at.toLocaleDateString("pt-br", {
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+        }),
+      {
+        id: "created_at",
+        header: "Data",
+        cell: (info) => info.getValue().split(" ")[0],
+        sortingFn: "stringDate",
+        sortDescFirst: true,
+        filterFn: "includesString",
+      }
+    ),
     columnHelper.display({
       id: "actions",
       header: "Ações",

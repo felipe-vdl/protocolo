@@ -3,7 +3,7 @@ import Dropdown from "./Dropdown";
 
 export default function Sidebar() {
   const [authUser, setAuthUser] = useState(null);
-  const [sidebarIsCollapsed, setSidebarIsCollapsed]= useState<boolean>(true);
+  const [sidebarIsCollapsed, setSidebarIsCollapsed] = useState<boolean>(true);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -22,14 +22,30 @@ export default function Sidebar() {
 
   return (
     <div className="z-10 flex bg-light-900 text-light-50 shadow shadow-black/30 dark:bg-dark-900 dark:text-dark-50">
-      <ul className={`flex ${sidebarIsCollapsed ? "" : "min-w-[12rem]"} flex-col border-r border-light-500 dark:border-dark-500`}>
-        <button title="Expandir/Contrair" onClick={() => setSidebarIsCollapsed(st => !st)} className={`${sidebarIsCollapsed ? "mx-auto" : "ml-auto mr-2"} mt-2 mb-1 p-2 bg-zinc-200 text-zinc-800 dark:bg-dark-500 dark:text-white hover:bg-zinc-300 hover:dark:bg-zinc-600 rounded`}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            { sidebarIsCollapsed ? 
-              <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
-              : 
-              <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
-            }
+      <ul
+        className={`flex ${
+          sidebarIsCollapsed ? "" : "min-w-[12rem]"
+        } flex-col border-r border-light-500 dark:border-dark-500`}
+      >
+        <button
+          title="Expandir/Contrair"
+          onClick={() => setSidebarIsCollapsed((st) => !st)}
+          className={`${
+            sidebarIsCollapsed ? "mx-auto" : "ml-auto mr-2"
+          } mt-2 mb-1 rounded bg-zinc-200 p-2 text-zinc-800 hover:bg-zinc-300 dark:bg-dark-500 dark:text-white hover:dark:bg-zinc-600`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            {sidebarIsCollapsed ? (
+              <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+            ) : (
+              <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+            )}
           </svg>
         </button>
         <Dropdown

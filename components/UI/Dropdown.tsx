@@ -18,7 +18,11 @@ interface DropdownProps {
   links: DropdownLink[];
 }
 
-export default function Dropdown({ sidebarIsCollapsed, section, links }: DropdownProps) {
+export default function Dropdown({
+  sidebarIsCollapsed,
+  section,
+  links,
+}: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
@@ -68,7 +72,9 @@ export default function Dropdown({ sidebarIsCollapsed, section, links }: Dropdow
             key={uuid()}
             href={link.href}
             title={link.title}
-            className={`${sidebarIsCollapsed ? "justify-center" : "justify-between"} flex items-center gap-2 border-b border-light-500 p-2 hover:bg-indigo-400/50 dark:border-dark-50/40 dark:hover:bg-slate-800/80`}
+            className={`${
+              sidebarIsCollapsed ? "justify-center" : "justify-between"
+            } flex items-center gap-2 border-b border-light-500 p-2 hover:bg-indigo-400/50 dark:border-dark-50/40 dark:hover:bg-slate-800/80`}
           >
             {link.icon}
             {!sidebarIsCollapsed && <h3>{link.title}</h3>}

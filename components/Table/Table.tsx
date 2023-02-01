@@ -52,24 +52,24 @@ export default function Table<T>({
         const valueA = rowA.getValue(columnId) as string;
         const valueB = rowB.getValue(columnId) as string;
 
-        const [dateA, timeA] = valueA.split(" ")
+        const [dateA, timeA] = valueA.split(" ");
         const a = new Date(
           +dateA.split("/")[2],
           +dateA.split("/")[1] - 1,
           +dateA.split("/")[0],
           +timeA.split(":")[0],
           +timeA.split(":")[1],
-          +timeA.split(":")[2],
+          +timeA.split(":")[2]
         );
 
-        const [dateB, timeB] = valueB.split(" ")
+        const [dateB, timeB] = valueB.split(" ");
         const b = new Date(
           +dateB.split("/")[2],
           +dateB.split("/")[1] - 1,
           +dateB.split("/")[0],
           +timeB.split(":")[0],
           +timeB.split(":")[1],
-          +timeB.split(":")[2],
+          +timeB.split(":")[2]
         );
 
         if (a < b) return -1;
@@ -170,7 +170,9 @@ export default function Table<T>({
             <tr
               key={row.id}
               className={`${
-                i % 2 === 0 ? "bg-zinc-50 dark:bg-zinc-200 hover:bg-blue-100 dark:hover:bg-indigo-200" : "bg-zinc-200 hover:bg-blue-200/75 dark:bg-zinc-300 dark:hover:bg-indigo-200/95"
+                i % 2 === 0
+                  ? "bg-zinc-50 hover:bg-blue-100 dark:bg-zinc-200 dark:hover:bg-indigo-200"
+                  : "bg-zinc-200 hover:bg-blue-200/75 dark:bg-zinc-300 dark:hover:bg-indigo-200/95"
               } transition-all`}
             >
               {row.getVisibleCells().map((cell) => (
