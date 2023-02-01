@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
 
 export interface UserSession {
+  id?: number;
   name?: string | null | undefined;
   role?: string;
   email?: string;

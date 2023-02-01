@@ -16,9 +16,9 @@ CREATE TABLE `users` (
 -- CreateTable
 CREATE TABLE `protocolos` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `num_inscricao` VARCHAR(191) NOT NULL,
-    `num_processo` VARCHAR(191) NOT NULL,
-    `anos_analise` VARCHAR(191) NOT NULL,
+    `num_inscricao` TEXT NOT NULL,
+    `num_processo` TEXT NOT NULL,
+    `anos_analise` TEXT NULL,
     `nome` TEXT NOT NULL,
     `assunto` TEXT NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

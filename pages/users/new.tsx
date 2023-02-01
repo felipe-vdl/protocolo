@@ -34,8 +34,6 @@ const UserCreate = ({ user }: UserCreateProps) => {
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-    console.log(form);
-
     try {
       if (Object.values(form).every((entry) => entry.trim().length > 0)) {
         setNotification(notificationInitialState);

@@ -30,10 +30,10 @@ enum Role {
 }
 
 model Protocolo {
-  id            Int       @id @default(autoincrement())
-  num_inscricao String
-  num_processo  String
-  anos_analise  String
+  id            Int      @id @default(autoincrement())
+  num_inscricao String   @db.Text
+  num_processo  String   @db.Text
+  anos_analise  String?  @db.Text
 
   nome          String   @db.Text
   assunto       String   @db.Text
