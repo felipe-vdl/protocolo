@@ -161,7 +161,7 @@ export default function Table<T>({
             <tr
               key={row.id}
               className={`${
-                i % 2 === 0 ? "bg-zinc-100 dark:bg-zinc-300 hover:bg-blue-100 dark:hover:bg-indigo-200" : "bg-zinc-200 hover:bg-blue-200 dark:bg-zinc-400 dark:hover:bg-indigo-300"
+                i % 2 === 0 ? "bg-zinc-50 dark:bg-zinc-200 hover:bg-blue-100 dark:hover:bg-indigo-200" : "bg-zinc-200 hover:bg-blue-200/75 dark:bg-zinc-300 dark:hover:bg-indigo-200/95"
               } transition-all`}
             >
               {row.getVisibleCells().map((cell) => (
