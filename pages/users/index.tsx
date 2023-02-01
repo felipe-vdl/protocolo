@@ -211,10 +211,10 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
       sortingFn: "alphanumeric",
       filterFn: "includesString",
     }),
-    columnHelper.accessor((row) => row.created_at.toLocaleDateString("pt-br"), {
+    columnHelper.accessor((row) => row.created_at.toLocaleDateString("pt-br", { hour: "numeric", minute: "numeric", second: "numeric" }), {
       id: "created_at",
       header: "Data de Criação",
-      cell: (info) => info.getValue(),
+      cell: (info) => info.getValue().split(" ")[0],
       sortingFn: "stringDate",
       sortDescFirst: true,
       filterFn: "includesString",
