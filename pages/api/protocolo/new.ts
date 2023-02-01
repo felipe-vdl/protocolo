@@ -7,7 +7,7 @@ import { Protocolo, User } from "@prisma/client";
 interface NewProtocoloResponse {
   message: string;
   protocolo?: Protocolo & {
-    user: User
+    user: User;
   };
 }
 
@@ -24,13 +24,8 @@ export default async function NewProtocolo(
 
     const session = await getServerSession(req, res, authOptions);
     if (session) {
-      const {
-        num_inscricao,
-        num_processo,
-        nome,
-        assunto,
-        anos_analise
-      } = req.body;
+      const { num_inscricao, num_processo, nome, assunto, anos_analise } =
+        req.body;
 
       const newProtocolo = await prisma.protocolo.create({
         data: {
@@ -40,15 +35,18 @@ export default async function NewProtocolo(
           assunto: String(assunto).toUpperCase(),
           anos_analise: String(anos_analise).toUpperCase(),
           user: {
-            connect: { id: +session.user.id }
-          }
+            connect: { id: +session.user.id },
+          },
         },
         include: {
-          user: true
-        }
+          user: true,
+        },
       });
 
-      return res.status(200).json({ message: "Usuário criado com sucesso.", protocolo: newProtocolo });
+      return res.status(200).json({
+        message: "Usuário criado com sucesso.",
+        protocolo: newProtocolo,
+      });
     } else {
       return res.status(401).json({ message: "Usuário não está autenticado." });
     }

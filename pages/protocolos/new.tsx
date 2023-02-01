@@ -9,7 +9,7 @@ import { Protocolo, User } from "@prisma/client";
 interface NewProtocoloResponse {
   message: string;
   protocolo?: Protocolo & {
-    user: User
+    user: User;
   };
 }
 
@@ -25,14 +25,14 @@ const UserCreate = () => {
     num_processo: "",
     nome: "",
     assunto: "",
-    anos_analise: ""
+    anos_analise: "",
   };
   const [form, setForm] = useState<{
-    num_inscricao: string,
-    num_processo: string,
-    nome: string,
-    assunto: string,
-    anos_analise: string
+    num_inscricao: string;
+    num_processo: string;
+    nome: string;
+    assunto: string;
+    anos_analise: string;
   }>(formInitalState);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
@@ -59,42 +59,40 @@ const UserCreate = () => {
           throw new Error(error.message);
         }
 
-        const { message, protocolo }: NewProtocoloResponse = await response.json();
+        const { message, protocolo }: NewProtocoloResponse =
+          await response.json();
         setNotification({ type: "success", message });
-        // setForm(formInitalState);
+        setForm(formInitalState);
         setIsLoading(false);
 
-        const option = {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-        }
-        const locale = 'pt-br';
-
         let win = window.open();
-        win.document.write('<html><head><title>Senha</title></head><body style="margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-start;">');
-        win.document.write(`<p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>`);
-        const img = new Image();
-        img.src = "/logo-mesquita192.png";
-        win.document.write(`<img src="${img.src}" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">`);
-        win.document.write(`<p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>`);
-        win.document.write(`<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> ${protocolo.num_inscricao}</p>`);
-        win.document.write(`<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> ${protocolo.num_processo}</p>`);
-        win.document.write(`<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> ${new Date(protocolo.created_at).toLocaleDateString(locale)}</p>`);
-        win.document.write(`<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> ${protocolo.nome}</p>`);
-        win.document.write(`<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> ${protocolo.assunto}</p>`);
-        win.document.write(`<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> ${protocolo.anos_analise}</p>`);
-        win.document.write(`<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> ${protocolo.user.name}</p>`);
-        win.document.write('</body></html>');
-        
-        img.onload = () => {
-          win.print();
-          win.close();
-        };
-
-        // print
+        win.document.write(`
+          <html>
+            <head><title>Senha</title></head>
+            <body style="margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-start; font-family: Arial, Helvetica, sans-serif;">
+              <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
+              <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
+              <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
+              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>
+              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_processo}</span></p>
+              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(protocolo.created_at).toLocaleDateString("pt-br")}</span></p>
+              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${protocolo.nome}</span></p>
+              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${protocolo.assunto}</span></p>
+              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>
+              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.user.name.toUpperCase()}</span></p>
+              <b style="margin: 0.25rem; text-align: start; font-size: 10px;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE.</b>
+              <script>
+                const img = new Image();
+                img.src = "/logo-mesquita192.png";
+                document.querySelector("img").src = img.src;
+                img.onload = () => {
+                  window.print();
+                  window.close();
+                };
+              </script>
+            </body>
+          </html>
+        `);
       } else {
         setNotification({
           type: "error",
@@ -204,9 +202,7 @@ const UserCreate = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<{}> = async (
-  context
-) => {
+export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (!session) {

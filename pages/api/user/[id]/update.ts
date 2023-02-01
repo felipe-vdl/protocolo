@@ -6,7 +6,7 @@ import { UserInfo } from "@/types/interfaces";
 
 interface UpdateUserHandlerResponse {
   message: string;
-  updatedUser?: Omit<UserInfo, "is_enabled" | "id">
+  updatedUser?: Omit<UserInfo, "is_enabled" | "id">;
 }
 
 export default async function UpdateUserHandler(
@@ -38,11 +38,9 @@ export default async function UpdateUserHandler(
     });
 
     if (checkExistingUser && checkExistingUser.id !== +id) {
-      return res
-        .status(409)
-        .json({
-          message: "O e-mail informado já está em uso por outro usuário.",
-        });
+      return res.status(409).json({
+        message: "O e-mail informado já está em uso por outro usuário.",
+      });
     }
 
     const updatedUser = await prisma.user.update({

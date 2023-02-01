@@ -61,7 +61,6 @@ const UserCreate = ({ user }: UserCreateProps) => {
         setNotification({ type: "success", message: data.message });
         setForm(data.updatedUser);
         setIsLoading(false);
-
       } else {
         setNotification({
           type: "error",
