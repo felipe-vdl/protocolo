@@ -38,7 +38,7 @@ export default function Dropdown({
       >
         <h2 className="flex items-center justify-center gap-2 py-1">
           {section.icon}
-          {!sidebarIsCollapsed ? section.title : ""}
+          <span className="hidden sm:block">{!sidebarIsCollapsed ? section.title : ""}</span>
         </h2>
         {isOpen ? (
           <svg
@@ -73,11 +73,11 @@ export default function Dropdown({
             href={link.href}
             title={link.title}
             className={`${
-              sidebarIsCollapsed ? "justify-center" : "justify-between"
+              sidebarIsCollapsed ? "justify-center" : "justify-center sm:justify-between"
             } flex items-center gap-2 border-b border-light-500 p-2 hover:bg-indigo-400/50 dark:border-dark-50/40 dark:hover:bg-slate-800/80`}
           >
             {link.icon}
-            {!sidebarIsCollapsed && <h3>{link.title}</h3>}
+            {!sidebarIsCollapsed && <h3 className="hidden sm:block">{link.title}</h3>}
           </Link>
         ))}
       </div>

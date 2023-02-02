@@ -55,7 +55,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="m-auto min-w-[450px] rounded-[30px] shadow shadow-black/30">
+    <div className="m-auto w-72 sm:w-[30rem] md:w-[36rem] lg:w-[42rem] max-w-full rounded-[30px] shadow shadow-black/30">
       <div className="rounded-t-[29px] bg-dourado py-2 text-center text-2xl font-bold text-white drop-shadow-md">
         PROTOCOLO
       </div>
