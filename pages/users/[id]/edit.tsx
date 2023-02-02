@@ -9,7 +9,7 @@ import { UserInfo } from "@/types/interfaces";
 
 import { AppNotification } from "@/types/interfaces";
 import React, { useState } from "react";
-import Link from "next/dist/client/link";
+import Router from "next/router";
 
 interface UserCreateProps {
   user: UserInfo;
@@ -156,12 +156,12 @@ const UserCreate = ({ user }: UserCreateProps) => {
             >
               {isLoading ? "Editando usuário..." : "Editar"}
             </button>
-            <Link
-              href="/users"
+            <button
+              onClick={() => Router.replace('/users')}
               className="flex-1 rounded-[10px] bg-zinc-500 p-1 text-center text-xl font-light hover:bg-zinc-400 disabled:bg-indigo-400"
             >
               Cancelar
-            </Link>
+            </button>
           </div>
         </form>
       </div>

@@ -171,7 +171,7 @@ export const getServerSideProps: GetServerSideProps<UserCreateProps> = async (
   } else {
     const authUser = await prisma.user.findFirst({
       where: {
-        email: session.user.email,
+        id: +session.user.id,
       },
     });
 
