@@ -1,24 +1,10 @@
+import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Dropdown from "./Dropdown";
 
 export default function Sidebar() {
-  const [authUser, setAuthUser] = useState(null);
+  const { data: session } = useSession();
   const [sidebarIsCollapsed, setSidebarIsCollapsed] = useState<boolean>(true);
-
-  useEffect(() => {
-    const getUserData = async () => {
-      const response = await fetch("/api/user/get-user", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      setAuthUser(data);
-    };
-
-    getUserData();
-  }, []);
 
   return (
     <div className="flex bg-light-900 sticky left-[-0.1%] text-light-50 shadow shadow-black/30 dark:bg-dark-900 dark:text-dark-50">
@@ -99,8 +85,8 @@ export default function Sidebar() {
             },
           ]}
         />
-        {authUser &&
-          (authUser.role === "ADMIN" || authUser.role === "SUPERADMIN") && (
+        {session &&
+          (session.user.role === "ADMIN" || session.user.role === "SUPERADMIN") && (
             <Dropdown
               sidebarIsCollapsed={sidebarIsCollapsed}
               section={{

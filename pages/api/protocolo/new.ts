@@ -44,7 +44,7 @@ export default async function NewProtocolo(
       });
 
       return res.status(200).json({
-        message: "Usuário criado com sucesso.",
+        message: "Protocolo registrado com sucesso.",
         protocolo: newProtocolo,
       });
     } else {
