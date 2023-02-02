@@ -21,7 +21,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <div className="z-10 flex bg-light-900 text-light-50 shadow shadow-black/30 dark:bg-dark-900 dark:text-dark-50">
+    <div className="flex bg-light-900 text-light-50 shadow shadow-black/30 dark:bg-dark-900 dark:text-dark-50">
       <ul
         className={`flex ${
           sidebarIsCollapsed ? "" : "min-w-[12rem]"

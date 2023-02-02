@@ -96,7 +96,7 @@ export default function Table<T>({
   });
 
   return (
-    <div className="flex w-full flex-col p-2 shadow shadow-black/30">
+    <div className="flex w-full flex-col p-2">
       <div className="mb-2 mr-auto flex w-full items-center justify-between">
         <input
           value={globalFilter ?? ""}
