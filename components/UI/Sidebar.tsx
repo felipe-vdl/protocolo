@@ -85,7 +85,7 @@ export default function Sidebar() {
             },
           ]}
         />
-        {session.user &&
+        {session &&
           (session.user.role === "ADMIN" || session.user.role === "SUPERADMIN") && (
             <Dropdown
               sidebarIsCollapsed={sidebarIsCollapsed}

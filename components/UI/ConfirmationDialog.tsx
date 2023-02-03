@@ -17,7 +17,7 @@ export default function ConfirmationDialog({
         className="fixed z-30 h-screen w-screen bg-black/30 backdrop-blur-sm"
         onClick={reject}
       ></div>
-      <div className="fixed top-1/2 left-1/2 z-40 flex w-1/3 translate-x-[-50%] translate-y-[-50%] flex-col gap-3 rounded bg-light-500 p-4 dark:bg-dark-500">
+      <div className="fixed top-1/2 left-1/2 z-40 flex w-72 sm:w-[30rem] md:w-[36rem] lg:w-[42rem] max-w-full translate-x-[-50%] translate-y-[-50%] flex-col gap-3 rounded bg-light-500 p-4 dark:bg-dark-500">
         <h2 className="text-center text-light-50 dark:text-dark-50">
           {message}
         </h2>
