@@ -90,7 +90,7 @@ const UserCreate = ({ user }: UserCreateProps) => {
       <Head>
         <title>SGP Dashboard</title>
       </Head>
-      <div className="m-auto flex w-1/3 flex-col items-center rounded-[12px] bg-light-500 text-white shadow shadow-black/20 dark:bg-dark-500">
+      <div className="m-auto w-full sm:w-[25rem] md:w-[30rem] lg:w-[38rem] flex-col items-center rounded-[12px] bg-light-500 text-white shadow shadow-black/20 dark:bg-dark-500">
         <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center">
           <h2 className="text-2xl font-light">Editar Usuário</h2>
         </div>
