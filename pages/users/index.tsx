@@ -282,6 +282,17 @@ export const getServerSideProps: GetServerSideProps<UserIndexProps> = async (
         id: +session.user.id,
       },
     });
+    if (authUser.role === "USER") {
+      const queryParams = "?notificationMessage=Usu%C3%A1rio%20n%C3%A3o%20tem%20permiss%C3%A3o&notificationType=error"
+
+      return {
+        redirect: {
+          permanent: false,
+          destination: `/${queryParams}`,
+        },
+        props: {},
+      };
+    }
 
     const users = await prisma.user.findMany({});
 
