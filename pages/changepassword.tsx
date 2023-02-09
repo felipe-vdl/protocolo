@@ -81,8 +81,8 @@ const ChangePasswordPage = ({ user }: ChangePasswordProps) => {
       <Head>
         <title>SGP Dashboard</title>
       </Head>
-      <div className="m-auto w-full sm:w-[25rem] md:w-[30rem] lg:w-[38rem] flex flex-col items-center rounded-[12px] bg-light-500 text-white shadow shadow-black/20 dark:bg-dark-500">
-        <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center">
+      <div className="m-auto w-full sm:w-[25rem] md:w-[30rem] lg:w-[38rem] flex flex-col items-center rounded-[12px] bg-light-500 text-light-50 dark:text-dark-50 shadow shadow-black/20 dark:bg-dark-500">
+        <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center text-white">
           <h2 className="text-2xl font-light">Alterar Senha</h2>
         </div>
         <form
@@ -134,7 +134,7 @@ const ChangePasswordPage = ({ user }: ChangePasswordProps) => {
           </div>
           <button
             disabled={isLoading}
-            className="rounded-[10px] bg-roxo p-1 text-xl font-light hover:bg-indigo-500 disabled:bg-indigo-400"
+            className="rounded-[10px] bg-roxo p-1 text-xl font-light hover:bg-indigo-500 disabled:bg-indigo-400 text-white"
           >
             {isLoading ? "Aplicando..." : "Aplicar"}
           </button>
