@@ -90,8 +90,8 @@ const UserCreate = ({ user }: UserCreateProps) => {
       <Head>
         <title>SGP Dashboard</title>
       </Head>
-      <div className="m-auto w-full sm:w-[25rem] md:w-[30rem] lg:w-[38rem] flex-col items-center rounded-[12px] bg-light-500 text-white shadow shadow-black/20 dark:bg-dark-500">
-        <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center">
+      <div className="m-auto w-full sm:w-[25rem] md:w-[30rem] lg:w-[38rem] flex-col items-center rounded-[12px] bg-light-500 text-light-50 dark:text-dark-50 shadow shadow-black/20 dark:bg-dark-500">
+        <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center text-white">
           <h2 className="text-2xl font-light">Editar Usuário</h2>
         </div>
         <form
@@ -152,13 +152,13 @@ const UserCreate = ({ user }: UserCreateProps) => {
           <div className="flex w-full gap-8">
             <button
               disabled={isLoading}
-              className="flex-1 rounded-[10px] bg-roxo p-1 text-xl font-light hover:bg-indigo-700 disabled:bg-indigo-400"
+              className="flex-1 rounded-[10px] bg-roxo p-1 text-xl font-light hover:bg-indigo-700 disabled:bg-indigo-400 text-white"
             >
               {isLoading ? "Editando usuário..." : "Editar"}
             </button>
             <button
               onClick={() => Router.replace('/users')}
-              className="flex-1 rounded-[10px] bg-zinc-500 p-1 text-center text-xl font-light hover:bg-zinc-400 disabled:bg-indigo-400"
+              className="flex-1 rounded-[10px] bg-zinc-500 p-1 text-center text-xl font-light hover:bg-zinc-400 disabled:bg-indigo-400 text-white"
             >
               Cancelar
             </button>
