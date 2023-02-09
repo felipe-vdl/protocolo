@@ -132,9 +132,9 @@ const UserCreate = () => {
       <Head>
         <title>SGP Dashboard</title>
       </Head>
-      <div className="m-auto w-full sm:w-[25rem] md:w-[30rem] lg:w-[38rem] flex flex-col items-center rounded-[12px] bg-light-500 text-white shadow shadow-black/20 dark:bg-dark-500">
+      <div className="m-auto w-full sm:w-[25rem] md:w-[30rem] lg:w-[38rem] flex flex-col items-center rounded-[12px] text-light-50 dark:text-dark-50 bg-light-500 shadow shadow-black/20 dark:bg-dark-500">
         <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center">
-          <h2 className="text-2xl font-light">Novo Protocolo</h2>
+          <h2 className="text-white text-2xl font-light">Novo Protocolo</h2>
         </div>
         <form
           className="flex w-full flex-col gap-8 p-4 pt-8"
@@ -206,7 +206,7 @@ const UserCreate = () => {
           </div>
           <button
             disabled={isLoading}
-            className="rounded-[10px] bg-roxo p-1 text-xl font-light hover:bg-indigo-700 disabled:bg-indigo-400"
+            className="text-white rounded-[10px] bg-roxo p-1 text-xl font-light hover:bg-indigo-700 disabled:bg-indigo-400"
           >
             {isLoading ? "Criando protocolo..." : "Criar"}
           </button>
