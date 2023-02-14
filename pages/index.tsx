@@ -17,7 +17,7 @@ const IndexPage = ({ user }: IndexProps) => {
   return (
     <>
       <Head>
-        <title>SGP Dashboard</title>
+        <title>Protocolo</title>
       </Head>
       <div className="m-auto">
         <h1 className="text-3xl font-medium">

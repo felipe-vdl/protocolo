@@ -16,11 +16,14 @@ CREATE TABLE `users` (
 -- CreateTable
 CREATE TABLE `protocolos` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `nome` TEXT NOT NULL,
+    `assunto` TEXT NOT NULL,
     `num_inscricao` TEXT NOT NULL,
     `num_processo` TEXT NOT NULL,
     `anos_analise` TEXT NULL,
-    `nome` TEXT NOT NULL,
-    `assunto` TEXT NOT NULL,
+    `cpf` TEXT NULL,
+    `telefone` TEXT NULL,
+    `enviar_whatsapp` BOOLEAN NOT NULL DEFAULT false,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `user_id` INTEGER NOT NULL,
 

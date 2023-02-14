@@ -5,6 +5,7 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { AppNotification } from "@/types/interfaces";
 import React, { useState } from "react";
 import { Protocolo, User } from "@prisma/client";
+import InputMask from "react-input-mask";
 
 interface NewProtocoloResponse {
   message: string;
@@ -20,20 +21,26 @@ const UserCreate = () => {
     notificationInitialState
   );
 
-  const formInitalState = {
+  const formInitialState = {
     num_inscricao: "",
     num_processo: "",
-    nome: "",
     assunto: "",
     anos_analise: "",
+    nome: "",
+    cpf: "",
+    telefone: "",
+    enviar_whatsapp: false,
   };
   const [form, setForm] = useState<{
     num_inscricao: string;
     num_processo: string;
-    nome: string;
     assunto: string;
     anos_analise: string;
-  }>(formInitalState);
+    nome: string;
+    cpf: string;
+    telefone: string;
+    enviar_whatsapp: boolean;
+  }>(formInitialState);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -62,7 +69,7 @@ const UserCreate = () => {
         const { message, protocolo }: NewProtocoloResponse =
           await response.json();
         setNotification({ type: "success", message });
-        setForm(formInitalState);
+        setForm(formInitialState);
         setIsLoading(false);
 
         let win = window.open();
@@ -82,15 +89,25 @@ const UserCreate = () => {
               <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
                 protocolo.created_at
               ).toLocaleDateString("pt-br")}</span></p>
-              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
-                protocolo.nome
-              }</span></p>
               <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
                 protocolo.assunto
               }</span></p>
               ${
                 protocolo.anos_analise
-                  ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
+                ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
+                : ""
+              }
+              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
+                protocolo.nome
+              }</span></p>
+              ${
+                protocolo.cpf
+                  ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
+                  : ""
+              }
+              ${
+                protocolo.telefone
+                  ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
                   : ""
               }
               <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.user.name.toUpperCase()}</span></p>
@@ -127,14 +144,18 @@ const UserCreate = () => {
     setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
   };
 
+  const handleToggle = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((st) => ({ ...st, [evt.target.name]: !st[evt.target.name] }));
+  };
+
   return (
     <>
       <Head>
-        <title>SGP Dashboard</title>
+        <title>Novo Protocolo</title>
       </Head>
-      <div className="m-auto w-full sm:w-[25rem] md:w-[30rem] lg:w-[38rem] flex flex-col items-center rounded-[12px] text-light-50 dark:text-dark-50 bg-light-500 shadow shadow-black/20 dark:bg-dark-500">
+      <div className="m-auto flex w-full flex-col items-center rounded-[12px] bg-light-500 text-light-50 shadow shadow-black/20 dark:bg-dark-500 dark:text-dark-50 sm:w-[25rem] md:w-[30rem] lg:w-[38rem]">
         <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center">
-          <h2 className="text-white text-2xl font-light">Novo Protocolo</h2>
+          <h2 className="text-2xl font-light text-white">Novo Protocolo</h2>
         </div>
         <form
           className="flex w-full flex-col gap-8 p-4 pt-8"
@@ -157,56 +178,90 @@ const UserCreate = () => {
               </span>
             </div>
           )}
-          <div className="flex flex-col gap-6 px-1">
-            <input
-              type="text"
-              onChange={handleChange}
-              name="num_inscricao"
-              value={form.num_inscricao}
-              className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="N° de Inscrição"
-              required={true}
-            />
-            <input
-              type="text"
-              onChange={handleChange}
-              name="num_processo"
-              value={form.num_processo}
-              className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="N° do Processo"
-              required={true}
-            />
-            <input
-              type="text"
-              onChange={handleChange}
-              name="nome"
-              value={form.nome}
-              className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="Nome"
-              required={true}
-            />
-            <input
-              type="text"
-              onChange={handleChange}
-              name="assunto"
-              value={form.assunto}
-              className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="Assunto"
-              required={true}
-            />
-            <input
-              type="text"
-              onChange={handleChange}
-              name="anos_analise"
-              value={form.anos_analise}
-              className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="Anos p/ Análise"
-              required={false}
-            />
+          <div className="flex flex-col gap-12">
+            <div className="flex flex-col gap-6 px-1">
+              <input
+                type="text"
+                onChange={handleChange}
+                name="num_inscricao"
+                value={form.num_inscricao}
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="N° de Inscrição"
+                required={true}
+              />
+              <input
+                type="text"
+                onChange={handleChange}
+                name="num_processo"
+                value={form.num_processo}
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="N° do Processo"
+                required={true}
+              />
+              <input
+                type="text"
+                onChange={handleChange}
+                name="assunto"
+                value={form.assunto}
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="Assunto"
+                required={true}
+              />
+              <input
+                type="text"
+                onChange={handleChange}
+                name="anos_analise"
+                value={form.anos_analise}
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="Anos p/ Análise"
+                required={false}
+              />
+            </div>
+            <div className="flex flex-col gap-6 px-1">
+              <input
+                type="text"
+                onChange={handleChange}
+                name="nome"
+                value={form.nome}
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="Nome"
+                required={true}
+              />
+              <InputMask
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                mask="999.999.999-99"
+                placeholder="CPF"
+                value={form.cpf}
+                name="cpf"
+                onChange={handleChange}
+              />
+              <InputMask
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="Telefone Celular (WhatsApp)"
+                mask="(99)99999-9999"
+                value={form.telefone}
+                name="telefone"
+                onChange={handleChange}
+              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  value="1"
+                  id="enviar_whatsapp"
+                  name="enviar_whatsapp"
+                  onChange={handleToggle}
+                  checked={form.enviar_whatsapp}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label htmlFor="enviar_whatsapp">
+                  Enviar notificação por WhatsApp
+                </label>
+              </div>
+            </div>
           </div>
           <button
             disabled={isLoading}
-            className="text-white rounded-[10px] bg-roxo p-1 text-xl font-light hover:bg-indigo-700 disabled:bg-indigo-400"
+            className="rounded-[10px] bg-roxo p-1 text-xl font-light text-white hover:bg-indigo-700 disabled:bg-indigo-400"
           >
             {isLoading ? "Criando protocolo..." : "Criar"}
           </button>

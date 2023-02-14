@@ -30,7 +30,7 @@ export default function Dropdown({
   };
 
   return (
-    <div key={uuid()} className="border-b border-zinc-300 dark:border-dark-500">
+    <div key={uuid()} className="z-20 border-b bg-light-900 dark:bg-dark-900 border-zinc-300 dark:border-dark-500">
       <div
         className="flex cursor-pointer items-center justify-between gap-2 border-b p-2 hover:bg-slate-200 dark:border-zinc-600 dark:hover:bg-slate-900/50"
         onClick={handleClick}

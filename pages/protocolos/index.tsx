@@ -17,50 +17,60 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
   const handlePrint = () => {
     let win = window.open();
     win.document.write(`
-    <html>
-      <head><title>Senha</title></head>
-      <body style="margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-start; font-family: Arial, Helvetica, sans-serif;">
-        <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
-        <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
-        <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
-        <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${
-          protocolo.num_inscricao
-        }</span></p>
-        <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
-          protocolo.num_processo
-        }</span></p>
-        <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
-          protocolo.created_at
-        ).toLocaleDateString("pt-br")}</span></p>
-        <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
-          protocolo.nome
-        }</span></p>
-        <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
-          protocolo.assunto
-        }</span></p>
-        ${
-          protocolo.anos_analise
-            ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
-            : ""
-        }
-        <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.user.name.toUpperCase()}</span></p>
-        <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
-        <script>
-          const img = new Image();
-          img.src = "/logo-mesquita192.png";
-          document.querySelector("img").src = img.src;
-          img.onload = () => {
-            window.print();
-            window.close();
-          };
-        </script>
-      </body>
-    </html>
-  `);
+      <html>
+        <head><title>Senha</title></head>
+        <body style="margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-start; font-family: Arial, Helvetica, sans-serif;">
+          <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
+          <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
+          <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
+          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${
+            protocolo.num_inscricao
+          }</span></p>
+          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
+            protocolo.num_processo
+          }</span></p>
+          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
+            protocolo.created_at
+          ).toLocaleDateString("pt-br")}</span></p>
+          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
+            protocolo.assunto
+          }</span></p>
+          ${
+            protocolo.anos_analise
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
+              : ""
+          }
+          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
+            protocolo.nome
+          }</span></p>
+          ${
+            protocolo.cpf
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
+              : ""
+          }
+          ${
+            protocolo.telefone
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
+              : ""
+          }
+          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.user.name.toUpperCase()}</span></p>
+          <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
+          <script>
+            const img = new Image();
+            img.src = "/logo-mesquita192.png";
+            document.querySelector("img").src = img.src;
+            img.onload = () => {
+              window.print();
+              window.close();
+            };
+          </script>
+        </body>
+      </html>
+    `);
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex justify-center gap-2">
       <button
         className="ratio-square rounded bg-blue-500 p-2 text-white transition-colors hover:bg-blue-700"
         title="Imprimir protocolo."
@@ -92,18 +102,14 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
       cell: (info) => info.getValue(),
       sortingFn: "basic",
       filterFn: "numToString",
+      size: 92
     }),
     columnHelper.accessor("num_processo", {
       header: "N° do Processo",
       cell: (info) => info.getValue(),
       sortingFn: "basic",
       filterFn: "numToString",
-    }),
-    columnHelper.accessor("nome", {
-      header: "Nome",
-      cell: (info) => info.getValue(),
-      sortingFn: "alphanumeric",
-      filterFn: "includesString",
+      size: 107
     }),
     columnHelper.accessor("assunto", {
       header: "Assunto",
@@ -116,6 +122,27 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
+      size: 101
+    }),
+    columnHelper.accessor("nome", {
+      header: "Nome",
+      cell: (info) => info.getValue(),
+      sortingFn: "alphanumeric",
+      filterFn: "includesString",
+    }),
+    columnHelper.accessor("cpf", {
+      header: "CPF",
+      cell: (info) => info.getValue(),
+      sortingFn: "alphanumeric",
+      filterFn: "includesString",
+      size: 125
+    }),
+    columnHelper.accessor("telefone", {
+      header: "Telefone",
+      cell: (info) => info.getValue(),
+      sortingFn: "alphanumeric",
+      filterFn: "includesString",
+      size: 122
     }),
     columnHelper.accessor(
       (row) =>
@@ -131,19 +158,21 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
         sortingFn: "stringDate",
         sortDescFirst: true,
         filterFn: "includesString",
-      }
+        size: 107
+      },
     ),
     columnHelper.display({
       id: "actions",
       header: "Ações",
       cell: (props) => <RowActions protocolo={props.row.original} />,
+      size: 70
     }),
   ];
 
   return (
     <>
       <Head>
-        <title>Usuários</title>
+        <title>Lista de Protocolos</title>
         <meta
           name="description"
           content="Sistema Gerenciador de Projetos — Prefeitura de Mesquita."

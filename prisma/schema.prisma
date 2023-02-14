@@ -30,18 +30,22 @@ enum Role {
 }
 
 model Protocolo {
-  id            Int      @id @default(autoincrement())
-  num_inscricao String   @db.Text
-  num_processo  String   @db.Text
-  anos_analise  String?  @db.Text
+  id              Int       @id @default(autoincrement())
 
-  nome          String   @db.Text
-  assunto       String   @db.Text
+  nome            String    @db.Text
+  assunto         String    @db.Text
+  num_inscricao   String    @db.Text
+  num_processo    String    @db.Text
 
-  created_at    DateTime @default(now())
+  anos_analise    String?   @db.Text
+  cpf             String?   @db.Text
+  telefone        String?   @db.Text
+  enviar_whatsapp Boolean   @default(false)
 
-  user          User @relation(fields: [user_id], references: [id])
-  user_id       Int
+  created_at      DateTime  @default(now())
+
+  user            User @relation(fields: [user_id], references: [id])
+  user_id         Int
 
   @@map("protocolos")
 }

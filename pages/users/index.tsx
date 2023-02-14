@@ -198,18 +198,21 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
       cell: (info) => info.getValue(),
       sortingFn: "basic",
       filterFn: "numToString",
+      size: 44
     }),
     columnHelper.accessor("name", {
       header: "Nome",
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
+      size: 71
     }),
     columnHelper.accessor("email", {
       header: "Email",
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
+      size: 210
     }),
     columnHelper.accessor(
       (row) =>
@@ -225,6 +228,7 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
         sortingFn: "stringDate",
         sortDescFirst: true,
         filterFn: "includesString",
+        size: 105
       }
     ),
     columnHelper.display({
@@ -239,6 +243,7 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
           authUser={user}
         />
       ),
+      size: 130
     }),
   ];
   const [notification, setNotification] =
@@ -247,7 +252,7 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
   return (
     <>
       <Head>
-        <title>Usuários</title>
+        <title>Lista de Usuários</title>
         <meta
           name="description"
           content="Sistema Gerenciador de Projetos — Prefeitura de Mesquita."

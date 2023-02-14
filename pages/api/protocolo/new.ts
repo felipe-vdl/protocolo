@@ -24,16 +24,19 @@ export default async function NewProtocolo(
 
     const session = await getServerSession(req, res, authOptions);
     if (session) {
-      const { num_inscricao, num_processo, nome, assunto, anos_analise } =
+      const { num_inscricao, num_processo, assunto, anos_analise, nome, cpf, telefone, enviar_whatsapp } =
         req.body;
 
       const newProtocolo = await prisma.protocolo.create({
         data: {
           num_inscricao: String(num_inscricao).toUpperCase(),
           num_processo: String(num_processo).toUpperCase(),
-          nome: String(nome).toUpperCase(),
           assunto: String(assunto).toUpperCase(),
           anos_analise: String(anos_analise).toUpperCase(),
+          nome: String(nome).toUpperCase(),
+          cpf: String(cpf).toUpperCase() ?? null,
+          telefone: String(telefone).toUpperCase() ?? null,
+          enviar_whatsapp: (enviar_whatsapp && telefone) ? true : false,
           user: {
             connect: { id: +session.user.id },
           },

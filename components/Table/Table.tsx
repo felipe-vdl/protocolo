@@ -39,6 +39,7 @@ export default function Table<T>({
   const table = useReactTable<T>({
     data,
     columns,
+    columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
     state: {
       sorting,
@@ -128,6 +129,8 @@ export default function Table<T>({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
+                  colSpan={header.colSpan}
+                  style={{ position: "relative", width: header.getSize() }}
                   className="border border-zinc-300 p-3 dark:border-zinc-500"
                 >
                   <div
@@ -160,6 +163,15 @@ export default function Table<T>({
                       placeholder={`Filtrar ${header.column.columnDef.header}`}
                     />
                   ) : null}
+                  {header.column.getCanResize() && (
+                    <div
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      className={`resizer ${
+                        header.column.getIsResizing() ? "isResizing" : ""
+                      }`}
+                    ></div>
+                  )}
                 </th>
               ))}
             </tr>

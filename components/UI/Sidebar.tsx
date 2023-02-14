@@ -7,7 +7,7 @@ export default function Sidebar() {
   const [sidebarIsCollapsed, setSidebarIsCollapsed] = useState<boolean>(true);
 
   return (
-    <div className="flex bg-light-900 sticky left-[-0.1%] text-light-50 shadow shadow-black/30 dark:bg-dark-900 dark:text-dark-50">
+    <div className="z-20 flex bg-light-900 sticky left-[-0.1%] text-light-50 shadow shadow-black/30 dark:bg-dark-900 dark:text-dark-50">
       <ul
         className={`flex ${
           sidebarIsCollapsed ? "" : "sm:min-w-[12rem]"
