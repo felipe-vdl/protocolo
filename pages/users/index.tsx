@@ -207,6 +207,22 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
       filterFn: "includesString",
       size: 71
     }),
+    columnHelper.accessor(row => {
+      switch (row.role) {
+        case "USER":
+          return "Usuário";
+        case "ADMIN":
+          return "Administrador";
+        case "SUPERADMIN":
+          return "Super Administrador"
+      }
+    }, {
+      header: "Nível",
+      cell: (info) => info.getValue(),
+      sortingFn: "alphanumeric",
+      filterFn: "includesString",
+      size: 90
+    }),
     columnHelper.accessor("email", {
       header: "Email",
       cell: (info) => info.getValue(),
