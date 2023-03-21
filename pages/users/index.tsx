@@ -240,7 +240,7 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
       {
         id: "created_at",
         header: "Data de Criação",
-        cell: (info) => info.getValue().split(" ")[0],
+        cell: (info) => info.getValue().replace(",", "").split(" ")[0],
         sortingFn: "stringDate",
         sortDescFirst: true,
         filterFn: "includesString",

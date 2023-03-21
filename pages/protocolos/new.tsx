@@ -50,7 +50,8 @@ const UserCreate = () => {
         form.num_processo.trim().length &&
         form.nome.trim().length &&
         form.assunto.trim().length
-      ) {
+        ) {
+        const submitter = document.activeElement as HTMLButtonElement;
         setNotification(notificationInitialState);
         setIsLoading(true);
         const response = await fetch("/api/protocolo/new", {
@@ -72,58 +73,60 @@ const UserCreate = () => {
         setForm(formInitialState);
         setIsLoading(false);
 
-        let win = window.open();
-        win.document.write(`
-          <html>
-            <head><title>Senha</title></head>
-            <body style="margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-start; font-family: Arial, Helvetica, sans-serif;">
-              <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
-              <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
-              <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
-              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${
-                protocolo.num_inscricao
-              }</span></p>
-              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
-                protocolo.num_processo
-              }</span></p>
-              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
-                protocolo.created_at
-              ).toLocaleDateString("pt-br")}</span></p>
-              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
-                protocolo.assunto
-              }</span></p>
-              ${
-                protocolo.anos_analise
-                ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
-                : ""
-              }
-              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
-                protocolo.nome
-              }</span></p>
-              ${
-                protocolo.cpf
-                  ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
-                  : ""
-              }
-              ${
-                protocolo.telefone
-                  ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
-                  : ""
-              }
-              <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.user.name.toUpperCase()}</span></p>
-              <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
-              <script>
-                const img = new Image();
-                img.src = "/logo-mesquita192.png";
-                document.querySelector("img").src = img.src;
-                img.onload = () => {
-                  window.print();
-                  window.close();
-                };
-              </script>
-            </body>
-          </html>
-        `);
+        if (submitter.value === "PRINT") {
+          let win = window.open();
+          win.document.write(`
+            <html>
+              <head><title>Senha</title></head>
+              <body style="margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-start; font-family: Arial, Helvetica, sans-serif;">
+                <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
+                <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
+                <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${
+                  protocolo.num_inscricao
+                }</span></p>
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
+                  protocolo.num_processo
+                }</span></p>
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
+                  protocolo.created_at
+                ).toLocaleDateString("pt-br")}</span></p>
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
+                  protocolo.assunto
+                }</span></p>
+                ${
+                  protocolo.anos_analise
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
+                    : ""
+                }
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
+                  protocolo.nome
+                }</span></p>
+                ${
+                  protocolo.cpf
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
+                    : ""
+                }
+                ${
+                  protocolo.telefone
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
+                    : ""
+                }
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.user.name.toUpperCase()}</span></p>
+                <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
+                <script>
+                  const img = new Image();
+                  img.src = "/logo-mesquita192.png";
+                  document.querySelector("img").src = img.src;
+                  img.onload = () => {
+                    window.print();
+                    window.close();
+                  };
+                </script>
+              </body>
+            </html>
+          `);
+        }
       } else {
         setNotification({
           type: "error",
@@ -228,6 +231,7 @@ const UserCreate = () => {
                 required={true}
               />
               <InputMask
+                required
                 className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
                 mask="999.999.999-99"
                 placeholder="CPF"
@@ -236,6 +240,7 @@ const UserCreate = () => {
                 onChange={handleChange}
               />
               <InputMask
+                minLength={14}
                 className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
                 placeholder="Telefone Celular (WhatsApp)"
                 mask="(99)99999-9999"
@@ -251,7 +256,7 @@ const UserCreate = () => {
                   name="enviar_whatsapp"
                   onChange={handleToggle}
                   checked={form.enviar_whatsapp}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+                  className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 dark:border-gray-600 dark:bg-gray-700"
                 />
                 <label htmlFor="enviar_whatsapp">
                   Enviar notificação por WhatsApp
@@ -259,12 +264,24 @@ const UserCreate = () => {
               </div>
             </div>
           </div>
-          <button
-            disabled={isLoading}
-            className="rounded-[10px] bg-roxo p-1 text-xl font-light text-white hover:bg-indigo-700 disabled:bg-indigo-400"
-          >
-            {isLoading ? "Criando protocolo..." : "Criar"}
-          </button>
+          <div className="flex gap-8">
+            <button
+              title="Salvar o protocolo sem imprimir."
+              value="SAVE"
+              disabled={isLoading}
+              className="flex-1 rounded-[10px] bg-green-600 p-1 text-lg font-light text-white hover:bg-green-500 disabled:bg-green-400"
+            >
+              {isLoading ? "Salvando..." : "Salvar"}
+            </button>
+            <button
+              title="Salvar e imprimir o protocolo."
+              value="PRINT"
+              disabled={isLoading}
+              className="flex-1 rounded-[10px] bg-blue-600 p-1 text-lg font-light text-white hover:bg-blue-500 disabled:bg-blue-400"
+            >
+              {isLoading ? "Salvando..." : "Salvar & Imprimir"}
+            </button>
+          </div>
         </form>
       </div>
     </>

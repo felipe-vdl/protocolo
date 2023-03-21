@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
@@ -92,9 +92,15 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
 };
 
 interface ProtocoloIndexProps {
-  protocolos: (Protocolo & { user: User })[];
+  protocolosList: (Protocolo & { user: User })[];
 }
-const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
+const ProtocoloIndex = ({ protocolosList }: ProtocoloIndexProps) => {
+  const [protocolos, setProtocolos] = useState<(Protocolo & { user: User })[]>([]);
+
+  useEffect(() => {
+    setProtocolos(protocolosList);
+  }, []);
+
   const columnHelper = createColumnHelper<Protocolo & { user: User }>();
   const columns = [
     columnHelper.accessor("num_inscricao", {
@@ -102,14 +108,14 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
       cell: (info) => info.getValue(),
       sortingFn: "basic",
       filterFn: "numToString",
-      size: 92
+      size: 92,
     }),
     columnHelper.accessor("num_processo", {
       header: "N° do Processo",
       cell: (info) => info.getValue(),
       sortingFn: "basic",
       filterFn: "numToString",
-      size: 107
+      size: 107,
     }),
     columnHelper.accessor("assunto", {
       header: "Assunto",
@@ -122,7 +128,7 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
-      size: 101
+      size: 101,
     }),
     columnHelper.accessor("nome", {
       header: "Nome",
@@ -135,14 +141,14 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
-      size: 125
+      size: 125,
     }),
     columnHelper.accessor("telefone", {
       header: "Telefone",
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
-      size: 122
+      size: 122,
     }),
     columnHelper.accessor(
       (row) =>
@@ -154,18 +160,18 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
       {
         id: "created_at",
         header: "Data",
-        cell: (info) => info.getValue().split(" ")[0],
+        cell: (info) => info.getValue().replace(",", "").split(" ")[0],
         sortingFn: "stringDate",
         sortDescFirst: true,
         filterFn: "includesString",
-        size: 107
-      },
+        size: 107,
+      }
     ),
     columnHelper.display({
       id: "actions",
       header: "Ações",
       cell: (props) => <RowActions protocolo={props.row.original} />,
-      size: 70
+      size: 70,
     }),
   ];
 
@@ -209,7 +215,7 @@ export const getServerSideProps: GetServerSideProps<
     });
     return {
       props: {
-        protocolos,
+        protocolosList: protocolos,
       },
     };
   }
