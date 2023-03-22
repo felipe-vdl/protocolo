@@ -6,6 +6,7 @@ import { AppNotification } from "@/types/interfaces";
 import React, { useState } from "react";
 import { Protocolo, User } from "@prisma/client";
 import InputMask from "react-input-mask";
+import z from "zod";
 
 interface NewProtocoloResponse {
   message: string;
@@ -13,6 +14,17 @@ interface NewProtocoloResponse {
     user: User;
   };
 }
+
+const protocoloFormSchema = z.object({
+    num_inscricao: z.string(),
+    num_processo: z.string(),
+    assunto: z.string(),
+    anos_analise: z.string().optional(),
+    nome: z.string().min(1, "Informe um nome."),
+    cpf: z.string().min(14, "CPF Inválido"),
+    telefone: z.union([z.string().length(0, "Telefone Inválido"), z.string().min(13, "Telefone Inválido")]).optional(),
+    enviar_whatsapp: z.boolean(),
+});
 
 const UserCreate = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -31,26 +43,13 @@ const UserCreate = () => {
     telefone: "",
     enviar_whatsapp: false,
   };
-  const [form, setForm] = useState<{
-    num_inscricao: string;
-    num_processo: string;
-    assunto: string;
-    anos_analise: string;
-    nome: string;
-    cpf: string;
-    telefone: string;
-    enviar_whatsapp: boolean;
-  }>(formInitialState);
+  const [form, setForm] = useState<z.infer<typeof protocoloFormSchema>>(formInitialState);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     try {
-      if (
-        form.num_inscricao.trim().length &&
-        form.num_processo.trim().length &&
-        form.nome.trim().length &&
-        form.assunto.trim().length
-      ) {
+      const result = protocoloFormSchema.safeParse(form)
+      if (result.success) {
         const submitter = document.activeElement as HTMLButtonElement;
         setNotification(notificationInitialState);
         setIsLoading(true);
@@ -59,7 +58,7 @@ const UserCreate = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(form),
+          body: JSON.stringify(result.data),
         });
 
         if (!response.ok) {
@@ -127,11 +126,17 @@ const UserCreate = () => {
             </html>
           `);
         }
-      } else {
+      } else if (result.success === false) {
+        const {errors} = result.error;
+
         setNotification({
           type: "error",
-          message: "Preencha as informações.",
+          message: `${errors.map(err => err.message).join(", ")}.`,
         });
+        /* setNotification({
+          type: "error",
+          message: "Preencha as informações.",
+        }); */
         setIsLoading(false);
       }
     } catch (error) {
@@ -234,13 +239,17 @@ const UserCreate = () => {
                 required
                 className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
                 mask="999.999.999-99"
+                maskChar={null}
                 placeholder="CPF"
                 value={form.cpf}
                 name="cpf"
-                onChange={handleChange}
-              />
-              <InputMask
                 minLength={14}
+                onChange={handleChange}
+                />
+              <InputMask
+                required={form.telefone.length > 1}
+                minLength={14}
+                maskChar={null}
                 className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
                 placeholder="Telefone Celular (WhatsApp)"
                 mask="(99)99999-9999"
