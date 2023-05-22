@@ -22,7 +22,7 @@ const protocoloFormSchema = z.object({
     anos_analise: z.string().optional(),
     nome: z.string().min(1, "Informe um nome."),
     cpf: z.string().min(14, "CPF Inválido"),
-    ddd: z.string().length(2, "DDD Inválido").optional(),
+    ddd: z.union([z.string().length(2, "DDD Inválido"), z.string().length(0, "DDD Inválido")]).optional(),
     telefone: z.union([z.string().length(0, "Telefone Inválido"), z.string().min(9, "Telefone Inválido")]).optional(),
     enviar_whatsapp: z.boolean(),
 });
