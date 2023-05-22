@@ -22,7 +22,8 @@ const protocoloFormSchema = z.object({
     anos_analise: z.string().optional(),
     nome: z.string().min(1, "Informe um nome."),
     cpf: z.string().min(14, "CPF Inválido"),
-    telefone: z.union([z.string().length(0, "Telefone Inválido"), z.string().min(13, "Telefone Inválido")]).optional(),
+    ddd: z.string().length(2, "DDD Inválido").optional(),
+    telefone: z.union([z.string().length(0, "Telefone Inválido"), z.string().min(9, "Telefone Inválido")]).optional(),
     enviar_whatsapp: z.boolean(),
 });
 
@@ -34,6 +35,7 @@ const UserCreate = () => {
   );
 
   const formInitialState = {
+    ddd: "",
     num_inscricao: "",
     num_processo: "",
     assunto: "",
@@ -58,7 +60,10 @@ const UserCreate = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(result.data),
+          body: JSON.stringify({
+            ...result.data,
+            telefone: `55${result.data.ddd}${result.data.telefone}`
+          }),
         });
 
         if (!response.ok) {
@@ -246,17 +251,29 @@ const UserCreate = () => {
                 minLength={14}
                 onChange={handleChange}
                 />
-              <InputMask
-                required={form.telefone.length > 1}
-                minLength={14}
-                maskChar={null}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder="Telefone Celular (WhatsApp)"
-                mask="(99)99999-9999"
-                value={form.telefone}
-                name="telefone"
-                onChange={handleChange}
-              />
+              <div className="flex">
+                <InputMask
+                  value={form.ddd}
+                  onChange={handleChange}
+                  name="ddd"
+                  placeholder="DDD"
+                  mask="99"
+                  max={2}
+                  required={form.telefone.length > 0}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none w-[4rem]"
+                />
+                <InputMask
+                  required={form.telefone.length > 0}
+                  minLength={14}
+                  maskChar={null}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none flex-1"
+                  placeholder="Telefone Celular (WhatsApp)"
+                  mask="99999-9999"
+                  value={form.telefone}
+                  name="telefone"
+                  onChange={handleChange}
+                />
+              </div>
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"

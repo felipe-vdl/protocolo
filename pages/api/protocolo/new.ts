@@ -46,6 +46,43 @@ export default async function NewProtocolo(
         },
       });
 
+      if (newProtocolo.enviar_whatsapp) {
+        try {
+          const res = await fetch(process.env.WHATSAPP_API, {
+            method: "POST",
+            body: JSON.stringify({
+              inscricao: newProtocolo.num_inscricao,
+              processo: newProtocolo.num_processo,
+              assunto: newProtocolo.assunto,
+              analise: newProtocolo.anos_analise ?? "Não se aplica",
+              nome: newProtocolo.nome,
+              cpf: newProtocolo.cpf,
+              whatsapp: newProtocolo.telefone,
+              data: newProtocolo.created_at.toLocaleDateString("pt-BR")
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            }
+          });
+  
+          if (res.ok) {
+            const updatedProtocolo = await prisma.protocolo.update({
+              where: {
+                id: newProtocolo.id,
+              },
+              data: {
+                whatsapp_enviado: true,
+              }
+            });
+
+            const data = await res.json();
+            console.log(data);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
       return res.status(200).json({
         message: "Protocolo registrado com sucesso.",
         protocolo: newProtocolo,
