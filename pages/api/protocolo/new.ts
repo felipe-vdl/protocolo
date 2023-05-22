@@ -34,8 +34,8 @@ export default async function NewProtocolo(
           assunto: String(assunto).toUpperCase(),
           anos_analise: String(anos_analise).toUpperCase(),
           nome: String(nome).toUpperCase(),
-          cpf: String(cpf).toUpperCase() ?? null,
-          telefone: String(telefone).toUpperCase() ?? null,
+          cpf: String(cpf).toUpperCase(),
+          telefone: String(telefone),
           enviar_whatsapp: (enviar_whatsapp && telefone) ? true : false,
           user: {
             connect: { id: +session.user.id },
@@ -51,7 +51,7 @@ export default async function NewProtocolo(
           const res = await fetch(process.env.WHATSAPP_API, {
             method: "POST",
             body: JSON.stringify({
-              inscricao: newProtocolo.num_inscricao,
+              inscricao: newProtocolo.num_inscricao ?? "Não se aplica",
               processo: newProtocolo.num_processo,
               assunto: newProtocolo.assunto,
               analise: newProtocolo.anos_analise ?? "Não se aplica",

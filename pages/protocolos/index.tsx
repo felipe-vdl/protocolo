@@ -23,9 +23,10 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
           <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
           <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
           <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
-          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${
-            protocolo.num_inscricao
-          }</span></p>
+          ${protocolo.num_inscricao
+            ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
+            : ""
+          }
           <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
             protocolo.num_processo
           }</span></p>
