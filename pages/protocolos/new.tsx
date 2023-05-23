@@ -62,7 +62,7 @@ const UserCreate = () => {
           },
           body: JSON.stringify({
             ...result.data,
-            telefone: `55${result.data.ddd}${result.data.telefone}`
+            telefone: result.data.telefone.length > 0 ? `55${result.data.ddd}${result.data.telefone}` : ""
           }),
         });
 

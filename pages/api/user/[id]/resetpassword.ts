@@ -35,6 +35,7 @@ export default async function ResetPasswordHandler(
       },
     });
     res.json({ message: "Senha restaurada com sucesso." });
+    
   } catch (error) {
     console.log(`Reset Password Error: ${error}`);
     return res.status(500).json({ message: "Ocorreu um erro." });
