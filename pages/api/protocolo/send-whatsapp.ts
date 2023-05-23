@@ -31,7 +31,7 @@ export default async function SendWhatsApp(
     }
 
     try {
-      const res = await fetch(process.env.WHATSAPP_API, {
+      const res = await fetch(process.env.WHATSAPP_API_URL, {
         method: "POST",
         body: JSON.stringify({
           inscricao: protocolo.num_inscricao ?? "Não se aplica",

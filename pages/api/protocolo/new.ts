@@ -48,7 +48,7 @@ export default async function NewProtocolo(
 
       if (newProtocolo.enviar_whatsapp) {
         try {
-          const res = await fetch(process.env.WHATSAPP_API, {
+          const res = await fetch(process.env.WHATSAPP_API_URL, {
             method: "POST",
             body: JSON.stringify({
               inscricao: newProtocolo.num_inscricao ?? "Não se aplica",
