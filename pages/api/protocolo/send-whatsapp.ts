@@ -24,7 +24,7 @@ export default async function SendWhatsApp(
     const { id } = req.body;
     const protocolo = await prisma.protocolo.findUnique({ where: { id } });
 
-    if (!protocolo.telefone.length) {
+    if (!protocolo.telefone) {
       return res.status(400).json({
         message: "O registro não contém telefone.",
       });
@@ -39,8 +39,8 @@ export default async function SendWhatsApp(
           assunto: protocolo.assunto,
           analise: protocolo.anos_analise ?? "Não se aplica",
           nome: protocolo.nome,
-          cpf: protocolo.cpf,
-          whatsapp: protocolo.telefone,
+          cpf: protocolo.cpf.replace(".", "").replace("-", ""),
+          whatsapp: protocolo.telefone.replace("-", ""),
           data: protocolo.created_at.toLocaleDateString("pt-BR"),
         }),
         headers: {

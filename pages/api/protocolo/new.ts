@@ -56,8 +56,8 @@ export default async function NewProtocolo(
               assunto: newProtocolo.assunto,
               analise: newProtocolo.anos_analise ?? "Não se aplica",
               nome: newProtocolo.nome,
-              cpf: newProtocolo.cpf,
-              whatsapp: newProtocolo.telefone,
+              cpf: newProtocolo.cpf.replace(".", "").replace("-", ""),
+              whatsapp: newProtocolo.telefone.replace("-", ""),
               data: newProtocolo.created_at.toLocaleDateString("pt-BR")
             }),
             headers: {
