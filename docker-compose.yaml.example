@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  server:
+    build: ./
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=mysql://user:password@database_address:3306/protocolo?schema=public
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=secret
+      - DEFAULT_PASSWORD=admin
+      - WHATSAPP_API_URL=https://example.com
+      - WHATSAPP_API_KEY=secret
