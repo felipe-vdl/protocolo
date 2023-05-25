@@ -40,31 +40,29 @@ export default async function SendWhatsApp(
         cpf: protocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
         whatsapp: protocolo.telefone.replaceAll("-", ""),
         data: protocolo.created_at.toLocaleDateString("pt-BR"),
-      }
-      console.log(protocoloInfo);
-      
+      };
+
       const res = await fetch(process.env.WHATSAPP_API_URL, {
         method: "POST",
         body: JSON.stringify(protocoloInfo),
         headers: {
           "Content-Type": "application/json",
+          "x-api-key": process.env.WHATSAPP_API_KEY,
         },
       });
 
       if (res.ok) {
-        const updatedProtocolo = await prisma.protocolo.update({
+        await prisma.protocolo.update({
           where: { id },
           data: {
             whatsapp_enviado: true,
           },
         });
-        const data = await res.json();
-        console.log(data);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
-    
+
     return res.json({
       message: "Notificação enviada com sucesso.",
     });

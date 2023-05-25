@@ -24,8 +24,16 @@ export default async function NewProtocolo(
 
     const session = await getServerSession(req, res, authOptions);
     if (session) {
-      const { num_inscricao, num_processo, assunto, anos_analise, nome, cpf, telefone, enviar_whatsapp } =
-        req.body;
+      const {
+        num_inscricao,
+        num_processo,
+        assunto,
+        anos_analise,
+        nome,
+        cpf,
+        telefone,
+        enviar_whatsapp,
+      } = req.body;
 
       const newProtocolo = await prisma.protocolo.create({
         data: {
@@ -36,7 +44,7 @@ export default async function NewProtocolo(
           nome: String(nome).toUpperCase(),
           cpf: String(cpf).toUpperCase(),
           telefone: String(telefone),
-          enviar_whatsapp: (enviar_whatsapp && telefone) ? true : false,
+          enviar_whatsapp: enviar_whatsapp && telefone ? true : false,
           user: {
             connect: { id: +session.user.id },
           },
@@ -56,33 +64,30 @@ export default async function NewProtocolo(
             nome: newProtocolo.nome,
             cpf: newProtocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
             whatsapp: newProtocolo.telefone.replaceAll("-", ""),
-            data: newProtocolo.created_at.toLocaleDateString("pt-BR")
-          }
-          console.log(protocoloInfo);
+            data: newProtocolo.created_at.toLocaleDateString("pt-BR"),
+          };
 
           const res = await fetch(process.env.WHATSAPP_API_URL, {
             method: "POST",
             body: JSON.stringify(protocoloInfo),
             headers: {
               "Content-Type": "application/json",
-            }
+              "x-api-key": process.env.WHATSAPP_API_KEY,
+            },
           });
-  
+
           if (res.ok) {
-            const updatedProtocolo = await prisma.protocolo.update({
+            await prisma.protocolo.update({
               where: {
                 id: newProtocolo.id,
               },
               data: {
                 whatsapp_enviado: true,
-              }
+              },
             });
-
-            const data = await res.json();
-            console.log(data);
           }
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
       }
 
