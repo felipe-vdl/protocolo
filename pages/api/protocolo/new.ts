@@ -48,18 +48,21 @@ export default async function NewProtocolo(
 
       if (newProtocolo.enviar_whatsapp) {
         try {
+          const protocoloInfo = {
+            inscricao: newProtocolo.num_inscricao ?? "Não se aplica",
+            processo: newProtocolo.num_processo,
+            assunto: newProtocolo.assunto,
+            analise: newProtocolo.anos_analise ?? "Não se aplica",
+            nome: newProtocolo.nome,
+            cpf: newProtocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
+            whatsapp: newProtocolo.telefone.replaceAll("-", ""),
+            data: newProtocolo.created_at.toLocaleDateString("pt-BR")
+          }
+          console.log(protocoloInfo);
+
           const res = await fetch(process.env.WHATSAPP_API_URL, {
             method: "POST",
-            body: JSON.stringify({
-              inscricao: newProtocolo.num_inscricao ?? "Não se aplica",
-              processo: newProtocolo.num_processo,
-              assunto: newProtocolo.assunto,
-              analise: newProtocolo.anos_analise ?? "Não se aplica",
-              nome: newProtocolo.nome,
-              cpf: newProtocolo.cpf.replace(".", "").replace("-", ""),
-              whatsapp: newProtocolo.telefone.replace("-", ""),
-              data: newProtocolo.created_at.toLocaleDateString("pt-BR")
-            }),
+            body: JSON.stringify(protocoloInfo),
             headers: {
               "Content-Type": "application/json",
             }
