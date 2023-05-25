@@ -12,3 +12,4 @@ services:
       - DEFAULT_PASSWORD=admin
       - WHATSAPP_API_URL=https://example.com
       - WHATSAPP_API_KEY=secret
+    restart: always
