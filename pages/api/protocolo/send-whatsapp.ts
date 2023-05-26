@@ -41,6 +41,7 @@ export default async function SendWhatsApp(
         whatsapp: protocolo.telefone.replaceAll("-", ""),
         data: protocolo.created_at.toLocaleDateString("pt-BR"),
       };
+      console.log(protocoloInfo);
 
       const res = await fetch(process.env.WHATSAPP_API_URL, {
         method: "POST",
@@ -58,6 +59,9 @@ export default async function SendWhatsApp(
             whatsapp_enviado: true,
           },
         });
+
+        const data = await res.json();
+        console.log(data);
       }
     } catch (error) {
       console.error(error);
