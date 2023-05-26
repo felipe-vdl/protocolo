@@ -35,7 +35,7 @@ export default async function NewProtocolo(
         enviar_whatsapp,
       } = req.body;
 
-      const newProtocolo = await prisma.protocolo.create({
+      const protocolo = await prisma.protocolo.create({
         data: {
           num_inscricao: String(num_inscricao).toUpperCase(),
           num_processo: String(num_processo).toUpperCase(),
@@ -54,17 +54,17 @@ export default async function NewProtocolo(
         },
       });
 
-      if (newProtocolo.enviar_whatsapp) {
+      if (protocolo.enviar_whatsapp) {
         try {
           const protocoloInfo = {
-            inscricao: newProtocolo.num_inscricao ?? "Não se aplica",
-            processo: newProtocolo.num_processo,
-            assunto: newProtocolo.assunto,
-            analise: newProtocolo.anos_analise ?? "Não se aplica",
-            nome: newProtocolo.nome,
-            cpf: newProtocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
-            whatsapp: newProtocolo.telefone.replaceAll("-", ""),
-            data: newProtocolo.created_at.toLocaleDateString("pt-BR"),
+            inscricao: protocolo.num_inscricao ? protocolo.num_inscricao : "Não se aplica",
+            processo: protocolo.num_processo,
+            assunto: protocolo.assunto,
+            analise: protocolo.anos_analise ? protocolo.anos_analise : "Não se aplica",
+            nome: protocolo.nome,
+            cpf: protocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
+            whatsapp: protocolo.telefone.replaceAll("-", ""),
+            data: protocolo.created_at.toLocaleDateString("pt-BR"),
           };
           console.log(protocoloInfo);
 
@@ -80,7 +80,7 @@ export default async function NewProtocolo(
           if (res.ok) {
             await prisma.protocolo.update({
               where: {
-                id: newProtocolo.id,
+                id: protocolo.id,
               },
               data: {
                 whatsapp_enviado: true,
@@ -97,7 +97,7 @@ export default async function NewProtocolo(
 
       return res.status(200).json({
         message: "Protocolo registrado com sucesso.",
-        protocolo: newProtocolo,
+        protocolo,
       });
     } else {
       return res.status(401).json({ message: "Usuário não está autenticado." });

@@ -32,10 +32,10 @@ export default async function SendWhatsApp(
 
     try {
       const protocoloInfo = {
-        inscricao: protocolo.num_inscricao ?? "Não se aplica",
+        inscricao: protocolo.num_inscricao ? protocolo.num_inscricao : "Não se aplica",
         processo: protocolo.num_processo,
         assunto: protocolo.assunto,
-        analise: protocolo.anos_analise ?? "Não se aplica",
+        analise: protocolo.anos_analise ? protocolo.anos_analise : "Não se aplica",
         nome: protocolo.nome,
         cpf: protocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
         whatsapp: protocolo.telefone.replaceAll("-", ""),
