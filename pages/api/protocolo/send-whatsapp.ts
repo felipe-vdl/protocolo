@@ -4,6 +4,7 @@ import { authOptions } from "../auth/[...nextauth]";
 import { prisma } from "../../../db";
 
 import { Message } from "@/types/interfaces";
+import { Protocolo } from "@prisma/client";
 
 export default async function SendWhatsApp(
   req: NextApiRequest,
@@ -31,38 +32,7 @@ export default async function SendWhatsApp(
     }
 
     try {
-      const protocoloInfo = {
-        inscricao: protocolo.num_inscricao ? protocolo.num_inscricao : "Não se aplica",
-        processo: protocolo.num_processo,
-        assunto: protocolo.assunto,
-        analise: protocolo.anos_analise ? protocolo.anos_analise : "Não se aplica",
-        nome: protocolo.nome,
-        cpf: protocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
-        whatsapp: protocolo.telefone.replaceAll("-", ""),
-        data: protocolo.created_at.toLocaleDateString("pt-BR"),
-      };
-      console.log(protocoloInfo);
-
-      const res = await fetch(process.env.WHATSAPP_API_URL, {
-        method: "POST",
-        body: JSON.stringify(protocoloInfo),
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.WHATSAPP_API_KEY,
-        },
-      });
-
-      if (res.ok) {
-        await prisma.protocolo.update({
-          where: { id },
-          data: {
-            whatsapp_enviado: true,
-          },
-        });
-
-        const data = await res.json();
-        console.log(data);
-      }
+      sendWhatsApp(protocolo);
     } catch (error) {
       console.error(error);
     }
@@ -74,4 +44,49 @@ export default async function SendWhatsApp(
     console.error(`Send WhatsApp Error: ${error}`);
     return res.status(500).json({ message: "Ocorreu um erro." });
   }
+}
+
+export const sendWhatsApp = async (protocolo: Protocolo) => {
+  const protocoloInfo = {
+    inscricao: protocolo.num_inscricao
+      ? protocolo.num_inscricao
+      : "Não se aplica",
+    processo: protocolo.num_processo,
+    assunto: protocolo.assunto,
+    analise: protocolo.anos_analise
+      ? protocolo.anos_analise
+      : "Não se aplica",
+    nome: protocolo.nome,
+    cpf: protocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
+    whatsapp: protocolo.telefone.replaceAll("-", ""),
+    data: protocolo.created_at.toLocaleDateString("pt-BR"),
+  };
+  console.log(protocoloInfo);
+
+  const res = await fetch(process.env.WHATSAPP_API_URL, {
+    method: "POST",
+    body: JSON.stringify(protocoloInfo),
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": process.env.WHATSAPP_API_KEY,
+    },
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data);
+  }
+
+  const updateProtocolo = await prisma.protocolo.update({
+    where: {
+      id: protocolo.id,
+    },
+    data: {
+      whatsapp_enviado: true,
+    },
+  });
+
+  const data = await res.json();
+  console.log(data);
+  return data;
 }

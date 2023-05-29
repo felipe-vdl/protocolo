@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { prisma } from "../../../db";
 import { Protocolo, User } from "@prisma/client";
+import { sendWhatsApp } from "./send-whatsapp";
 
 interface NewProtocoloResponse {
   message: string;
@@ -56,42 +57,9 @@ export default async function NewProtocolo(
 
       if (protocolo.enviar_whatsapp) {
         try {
-          const protocoloInfo = {
-            inscricao: protocolo.num_inscricao ? protocolo.num_inscricao : "Não se aplica",
-            processo: protocolo.num_processo,
-            assunto: protocolo.assunto,
-            analise: protocolo.anos_analise ? protocolo.anos_analise : "Não se aplica",
-            nome: protocolo.nome,
-            cpf: protocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
-            whatsapp: protocolo.telefone.replaceAll("-", ""),
-            data: protocolo.created_at.toLocaleDateString("pt-BR"),
-          };
-          console.log(protocoloInfo);
-
-          const res = await fetch(process.env.WHATSAPP_API_URL, {
-            method: "POST",
-            body: JSON.stringify(protocoloInfo),
-            headers: {
-              "Content-Type": "application/json",
-              "x-api-key": process.env.WHATSAPP_API_KEY,
-            },
-          });
-
-          if (res.ok) {
-            await prisma.protocolo.update({
-              where: {
-                id: protocolo.id,
-              },
-              data: {
-                whatsapp_enviado: true,
-              },
-            });
-
-            const data = await res.json();
-            console.log(data);
-          }
+          sendWhatsApp(protocolo);
         } catch (error) {
-          console.error(error);
+          console.log(error);
         }
       }
 
@@ -104,6 +72,6 @@ export default async function NewProtocolo(
     }
   } catch (error) {
     console.error(`Register Error: ${error}`);
-    return res.status(500).json({ message: "There was an error." });
+    return res.status(500).json({ message: "Ocorreu um erro na criação o protocolo." });
   }
 }
