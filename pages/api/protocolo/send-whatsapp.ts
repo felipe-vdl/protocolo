@@ -51,7 +51,7 @@ export const sendWhatsApp = async (protocolo: Protocolo) => {
     inscricao: protocolo.num_inscricao
       ? protocolo.num_inscricao
       : "Não se aplica",
-    processo: protocolo.num_processo,
+    processo: protocolo.processo,
     assunto: protocolo.assunto,
     analise: protocolo.anos_analise
       ? protocolo.anos_analise

@@ -16,41 +16,60 @@ interface NewProtocoloResponse {
 }
 
 const protocoloFormSchema = z.object({
-    num_inscricao: z.string().optional(),
-    num_processo: z.string(),
-    assunto: z.string(),
-    anos_analise: z.string().optional(),
-    nome: z.string().min(1, "Informe um nome."),
-    cpf: z.string().min(14, "CPF Inválido"),
-    ddd: z.union([z.string().length(2, "DDD Inválido"), z.string().length(0, "DDD Inválido")]).optional(),
-    telefone: z.union([z.string().length(0, "Telefone Inválido"), z.string().min(9, "Telefone Inválido")]).optional(),
-    enviar_whatsapp: z.boolean(),
+  num_inscricao: z.string().optional(),
+  assunto: z.string(),
+  anos_analise: z.string().optional(),
+  nome: z.string().min(1, "Informe um nome."),
+  cpf: z.union([
+    z.string().length(0, "CPF Inválido"),
+    z.string().min(14, "CPF Inválido"),
+  ]),
+  cnpj: z.union([
+    z.string().length(0, "CNPJ Inválido"),
+    z.string().min(18, "CNPJ Inválido"),
+  ]),
+  ddd: z
+    .union([
+      z.string().length(0, "DDD Inválido"),
+      z.string().length(2, "DDD Inválido"),
+    ])
+    .optional(),
+  telefone: z
+    .union([
+      z.string().length(0, "Telefone Inválido"),
+      z.string().min(9, "Telefone Inválido"),
+    ])
+    .optional(),
+  enviar_whatsapp: z.boolean(),
 });
 
-const UserCreate = () => {
+const ProtocoloCreate = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const notificationInitialState: AppNotification = { message: "", type: "" };
   const [notification, setNotification] = useState<AppNotification>(
     notificationInitialState
   );
 
+  const [isCPF, setIsCpf] = useState<boolean>(true);
+
   const formInitialState = {
     ddd: "",
     num_inscricao: "",
-    num_processo: "",
     assunto: "",
     anos_analise: "",
     nome: "",
     cpf: "",
+    cnpj: "",
     telefone: "",
     enviar_whatsapp: false,
   };
-  const [form, setForm] = useState<z.infer<typeof protocoloFormSchema>>(formInitialState);
+  const [form, setForm] =
+    useState<z.infer<typeof protocoloFormSchema>>(formInitialState);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     try {
-      const result = protocoloFormSchema.safeParse(form)
+      const result = protocoloFormSchema.safeParse(form);
       if (result.success) {
         const submitter = document.activeElement as HTMLButtonElement;
         setNotification(notificationInitialState);
@@ -62,7 +81,10 @@ const UserCreate = () => {
           },
           body: JSON.stringify({
             ...result.data,
-            telefone: result.data.telefone.length > 0 ? `55${result.data.ddd}${result.data.telefone}` : ""
+            telefone:
+              result.data.telefone.length > 0
+                ? `55${result.data.ddd}${result.data.telefone}`
+                : "",
           }),
         });
 
@@ -86,12 +108,13 @@ const UserCreate = () => {
                 <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
                 <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
                 <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
-                ${protocolo.num_inscricao
-                  ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
-                  : ""
+                ${
+                  protocolo.num_inscricao
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
+                    : ""
                 }
                 <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.num_processo
+                  protocolo.processo
                 }</span></p>
                 <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
                   protocolo.created_at
@@ -110,6 +133,11 @@ const UserCreate = () => {
                 ${
                   protocolo.cpf
                     ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
+                    : ""
+                }
+                ${
+                  protocolo.cnpj
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${protocolo.cnpj}</span></p>`
                     : ""
                 }
                 ${
@@ -133,11 +161,11 @@ const UserCreate = () => {
           `);
         }
       } else if (result.success === false) {
-        const {errors} = result.error;
+        const { errors } = result.error;
 
         setNotification({
           type: "error",
-          message: `${errors.map(err => err.message).join(", ")}.`,
+          message: `${errors.map((err) => err.message).join(", ")}.`,
         });
         /* setNotification({
           type: "error",
@@ -161,6 +189,25 @@ const UserCreate = () => {
   const handleToggle = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setForm((st) => ({ ...st, [evt.target.name]: !st[evt.target.name] }));
   };
+  
+  const handleRadioChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target.value === "cpf") {
+      setIsCpf(true);
+      setForm(st => ({
+        ...st,
+        cnpj: "",
+      }));
+    } else {
+      setIsCpf(false);
+      setForm(st => ({
+        ...st,
+        cpf: "",
+        ddd: "",
+        telefone: "",
+        enviar_whatsapp: false
+      }));
+    }
+  }
 
   return (
     <>
@@ -205,15 +252,6 @@ const UserCreate = () => {
               <input
                 type="text"
                 onChange={handleChange}
-                name="num_processo"
-                value={form.num_processo}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder="N° do Processo"
-                required={true}
-              />
-              <input
-                type="text"
-                onChange={handleChange}
                 name="assunto"
                 value={form.assunto}
                 className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
@@ -231,63 +269,89 @@ const UserCreate = () => {
               />
             </div>
             <div className="flex flex-col gap-6 px-1">
+              <div className="flex w-full items-center">
+                <div className="flex flex-1 items-center justify-center gap-2">
+                  <input onChange={handleRadioChange} type="radio" id="cpf" name="tipo" value="cpf" checked={isCPF} />
+                  <label htmlFor="cpf">CPF</label>
+                </div>
+                <div className="flex flex-1 items-center justify-center gap-2">
+                  <input onChange={handleRadioChange} type="radio" id="cnpj" name="tipo" value="cnpj" checked={!isCPF} />
+                  <label htmlFor="cnpj">CNPJ</label>
+                </div>
+              </div>
               <input
                 type="text"
                 onChange={handleChange}
                 name="nome"
                 value={form.nome}
                 className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder="Nome"
+                placeholder={isCPF ? "Nome" : "Razão Social"}
                 required={true}
               />
-              <InputMask
-                required
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                mask="999.999.999-99"
-                maskChar={null}
-                placeholder="CPF"
-                value={form.cpf}
-                name="cpf"
-                minLength={14}
-                onChange={handleChange}
-                />
-              <div className="flex">
+              {isCPF ? (
+                <>
+                  <InputMask
+                    required
+                    className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                    mask="999.999.999-99"
+                    maskChar={null}
+                    placeholder="CPF"
+                    value={form.cpf}
+                    name="cpf"
+                    minLength={14}
+                    onChange={handleChange}
+                  />
+                  <div className="flex">
+                    <InputMask
+                      value={form.ddd}
+                      onChange={handleChange}
+                      name="ddd"
+                      placeholder="DDD"
+                      mask="99"
+                      max={2}
+                      required={form.telefone.length > 0}
+                      className="w-[4rem] border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                    />
+                    <InputMask
+                      required={form.telefone.length > 0}
+                      minLength={14}
+                      maskChar={null}
+                      className="flex-1 border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                      placeholder="Telefone Celular (WhatsApp)"
+                      mask="99999-9999"
+                      value={form.telefone}
+                      name="telefone"
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      value="1"
+                      id="enviar_whatsapp"
+                      name="enviar_whatsapp"
+                      onChange={handleToggle}
+                      checked={form.enviar_whatsapp}
+                      className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 dark:border-gray-600 dark:bg-gray-700"
+                    />
+                    <label htmlFor="enviar_whatsapp">
+                      Enviar notificação por WhatsApp
+                    </label>
+                  </div>
+                </>
+              ) : (
                 <InputMask
-                  value={form.ddd}
-                  onChange={handleChange}
-                  name="ddd"
-                  placeholder="DDD"
-                  mask="99"
-                  max={2}
-                  required={form.telefone.length > 0}
-                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none w-[4rem]"
-                />
-                <InputMask
-                  required={form.telefone.length > 0}
-                  minLength={14}
+                  required
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  mask="99.999.999/9999-99"
                   maskChar={null}
-                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none flex-1"
-                  placeholder="Telefone Celular (WhatsApp)"
-                  mask="99999-9999"
-                  value={form.telefone}
-                  name="telefone"
+                  placeholder="CNPJ"
+                  value={form.cnpj}
+                  name="cnpj"
+                  minLength={18}
                   onChange={handleChange}
                 />
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  value="1"
-                  id="enviar_whatsapp"
-                  name="enviar_whatsapp"
-                  onChange={handleToggle}
-                  checked={form.enviar_whatsapp}
-                  className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 dark:border-gray-600 dark:bg-gray-700"
-                />
-                <label htmlFor="enviar_whatsapp">
-                  Enviar notificação por WhatsApp
-                </label>
-              </div>
+              )}
             </div>
           </div>
           <div className="flex gap-8">
@@ -354,5 +418,5 @@ export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
   }
 };
 
-UserCreate.layout = "dashboard";
-export default UserCreate;
+ProtocoloCreate.layout = "dashboard";
+export default ProtocoloCreate;

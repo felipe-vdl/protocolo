@@ -5,6 +5,7 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { prisma } from "@/db";
+import { useSession } from "next-auth/react";
 
 import { User, Protocolo } from "@prisma/client";
 import Head from "next/head";
@@ -13,12 +14,11 @@ import { createColumnHelper } from "@tanstack/react-table";
 
 import { useAtom } from "jotai";
 import { notificationAtom } from "@/components/store/store";
-import { useSession } from "next-auth/react";
-import Link from "next/dist/client/link";
 
 import { AppDialog, AppNotification } from "@/types/interfaces";
 import ConfirmationDialog from "@/components/UI/ConfirmationDialog";
 import FlyingNotification from "@/components/UI/FlyingNotification";
+import Link from "next/link";
 
 interface RowActionsProps {
   protocolo: Protocolo & { user: User };
@@ -413,11 +413,21 @@ export const getServerSideProps: GetServerSideProps<
       },
       props: {},
     };
+  } else if (session.user.role !== "SUPERADMIN") {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+      props: {},
+    };
   } else {
     const protocolos = await prisma.protocolo.findMany({
       include: { user: true },
       where: {
-        deleted_at: null,
+        NOT: {
+          deleted_at: null,
+        },
       },
     });
     return {

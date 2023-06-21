@@ -27,23 +27,54 @@ export default async function NewProtocolo(
     if (session) {
       const {
         num_inscricao,
-        num_processo,
         assunto,
         anos_analise,
         nome,
         cpf,
+        cnpj,
         telefone,
         enviar_whatsapp,
       } = req.body;
 
+      // Algoritmo de formação do 'processo'.
+      const lastProtocolo = await prisma.protocolo.findMany({
+        orderBy: {
+          id: "desc",
+        },
+        take: 1,
+      });
+
+      const dateNow = new Date();
+      const ano = `${dateNow.getFullYear()}`.slice(2);
+      const mes = dateNow.getMonth() + 1;
+
+      let num_processo: number;
+
+      if (lastProtocolo.length) {
+        if (+lastProtocolo[0].processo.split("/")[2] < +ano) {
+          // If the last record's year is less then the current date's year, restart the count from 1.
+          num_processo = 1;
+        } else {
+          // If we're still in the same year, increment the counter.
+          num_processo = lastProtocolo[0].num_processo+1;
+        }
+      } else {
+        // First register.
+        num_processo = 1;
+      }
+
+      const processo = `${mes}/${num_processo}/${ano}`;
+
       const protocolo = await prisma.protocolo.create({
         data: {
           num_inscricao: String(num_inscricao).toUpperCase(),
-          num_processo: String(num_processo).toUpperCase(),
+          num_processo,
+          processo,
           assunto: String(assunto).toUpperCase(),
           anos_analise: String(anos_analise).toUpperCase(),
           nome: String(nome).toUpperCase(),
-          cpf: String(cpf).toUpperCase(),
+          cpf: cpf ? String(cpf).toUpperCase() : "",
+          cnpj: cnpj ? String(cnpj).toUpperCase() : "",
           telefone: String(telefone),
           enviar_whatsapp: enviar_whatsapp && telefone ? true : false,
           user: {
@@ -72,6 +103,8 @@ export default async function NewProtocolo(
     }
   } catch (error) {
     console.error(`Register Error: ${error}`);
-    return res.status(500).json({ message: "Ocorreu um erro na criação o protocolo." });
+    return res
+      .status(500)
+      .json({ message: "Ocorreu um erro na criação o protocolo." });
   }
 }

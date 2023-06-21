@@ -198,37 +198,40 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
       cell: (info) => info.getValue(),
       sortingFn: "basic",
       filterFn: "numToString",
-      size: 44
+      size: 44,
     }),
     columnHelper.accessor("name", {
       header: "Nome",
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
-      size: 71
+      size: 71,
     }),
-    columnHelper.accessor(row => {
-      switch (row.role) {
-        case "USER":
-          return "Usuário";
-        case "ADMIN":
-          return "Administrador";
-        case "SUPERADMIN":
-          return "Super Administrador"
+    columnHelper.accessor(
+      (row) => {
+        switch (row.role) {
+          case "USER":
+            return "Usuário";
+          case "ADMIN":
+            return "Administrador";
+          case "SUPERADMIN":
+            return "Super Administrador";
+        }
+      },
+      {
+        header: "Nível",
+        cell: (info) => info.getValue(),
+        sortingFn: "alphanumeric",
+        filterFn: "includesString",
+        size: 90,
       }
-    }, {
-      header: "Nível",
-      cell: (info) => info.getValue(),
-      sortingFn: "alphanumeric",
-      filterFn: "includesString",
-      size: 90
-    }),
+    ),
     columnHelper.accessor("email", {
       header: "Email",
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
-      size: 210
+      size: 210,
     }),
     columnHelper.accessor(
       (row) =>
@@ -244,7 +247,7 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
         sortingFn: "stringDate",
         sortDescFirst: true,
         filterFn: "includesString",
-        size: 105
+        size: 105,
       }
     ),
     columnHelper.display({
@@ -259,7 +262,7 @@ const UserCreate = ({ user, users }: UserIndexProps) => {
           authUser={user}
         />
       ),
-      size: 130
+      size: 130,
     }),
   ];
   const [notification, setNotification] =
@@ -304,7 +307,8 @@ export const getServerSideProps: GetServerSideProps<UserIndexProps> = async (
       },
     });
     if (authUser.role === "USER") {
-      const queryParams = "?notificationMessage=Usu%C3%A1rio%20n%C3%A3o%20tem%20permiss%C3%A3o&notificationType=error"
+      const queryParams =
+        "?notificationMessage=Usu%C3%A1rio%20n%C3%A3o%20tem%20permiss%C3%A3o&notificationType=error";
 
       return {
         redirect: {
