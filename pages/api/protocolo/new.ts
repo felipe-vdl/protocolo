@@ -8,7 +8,8 @@ import { sendWhatsApp } from "./send-whatsapp";
 interface NewProtocoloResponse {
   message: string;
   protocolo?: Protocolo & {
-    user: User;
+    creator: User;
+    editor?: User;
   };
 }
 
@@ -77,12 +78,12 @@ export default async function NewProtocolo(
           cnpj: cnpj ? String(cnpj).toUpperCase() : "",
           telefone: String(telefone),
           enviar_whatsapp: enviar_whatsapp && telefone ? true : false,
-          user: {
+          creator: {
             connect: { id: +session.user.id },
-          },
+          }
         },
         include: {
-          user: true,
+          creator: true,
         },
       });
 

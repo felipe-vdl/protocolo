@@ -2,16 +2,18 @@ import Head from "next/head";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { AppNotification } from "@/types/interfaces";
-import React, { useState } from "react";
 import { Protocolo, User } from "@prisma/client";
+
+import React, { useState } from "react";
+import { AppNotification } from "@/types/interfaces";
 import InputMask from "react-input-mask";
 import z from "zod";
 
 interface NewProtocoloResponse {
   message: string;
   protocolo?: Protocolo & {
-    user: User;
+    creator: User;
+    editor?: User;
   };
 }
 
@@ -108,44 +110,36 @@ const ProtocoloCreate = () => {
                 <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
                 <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
                 <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
-                ${
-                  protocolo.num_inscricao
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
-                    : ""
-                }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.processo
-                }</span></p>
+                ${protocolo.num_inscricao
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
+              : ""
+            }
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${protocolo.processo
+            }</span></p>
                 <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
-                  protocolo.created_at
-                ).toLocaleDateString("pt-br")}</span></p>
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.assunto
-                }</span></p>
-                ${
-                  protocolo.anos_analise
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
-                    : ""
-                }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.nome
-                }</span></p>
-                ${
-                  protocolo.cpf
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
-                    : ""
-                }
-                ${
-                  protocolo.cnpj
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${protocolo.cnpj}</span></p>`
-                    : ""
-                }
-                ${
-                  protocolo.telefone
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
-                    : ""
-                }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.user.name.toUpperCase()}</span></p>
+              protocolo.created_at
+            ).toLocaleDateString("pt-br")}</span></p>
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${protocolo.assunto
+            }</span></p>
+                ${protocolo.anos_analise
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
+              : ""
+            }
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${protocolo.nome
+            }</span></p>
+                ${protocolo.cpf
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
+              : ""
+            }
+                ${protocolo.cnpj
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${protocolo.cnpj}</span></p>`
+              : ""
+            }
+                ${protocolo.telefone
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
+              : ""
+            }
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.creator.name.toUpperCase()}</span></p>
                 <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
                 <script>
                   const img = new Image();
@@ -189,7 +183,7 @@ const ProtocoloCreate = () => {
   const handleToggle = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setForm((st) => ({ ...st, [evt.target.name]: !st[evt.target.name] }));
   };
-  
+
   const handleRadioChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     if (evt.target.value === "cpf") {
       setIsCpf(true);
@@ -224,11 +218,10 @@ const ProtocoloCreate = () => {
         >
           {notification.message && (
             <div
-              className={`flex w-full items-center rounded-[8px] px-3 py-1 text-center ${
-                notification.type === "error"
-                  ? "bg-red-300 text-red-800"
-                  : "bg-green-300 text-green-800"
-              }`}
+              className={`flex w-full items-center rounded-[8px] px-3 py-1 text-center ${notification.type === "error"
+                ? "bg-red-300 text-red-800"
+                : "bg-green-300 text-green-800"
+                }`}
             >
               <p className="mx-auto">{notification.message}</p>
               <span

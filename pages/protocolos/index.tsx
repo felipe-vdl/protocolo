@@ -21,7 +21,7 @@ import ConfirmationDialog from "@/components/UI/ConfirmationDialog";
 import FlyingNotification from "@/components/UI/FlyingNotification";
 
 interface RowActionsProps {
-  protocolo: Protocolo & { user: User };
+  protocolo: Protocolo & { creator: User; editor?: User };
 }
 const RowActions = ({ protocolo }: RowActionsProps) => {
   const [notification, setNotification] = useAtom(notificationAtom);
@@ -124,7 +124,7 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
               ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
               : ""
           }
-          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.user.name.toUpperCase()}</span></p>
+          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.creator.name.toUpperCase()}</span></p>
           <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
           <script>
             const img = new Image();
@@ -292,10 +292,10 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
 };
 
 interface ProtocoloIndexProps {
-  protocolos: (Protocolo & { user: User })[];
+  protocolos: (Protocolo & { creator: User, editor?: User; })[];
 }
 const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
-  const columnHelper = createColumnHelper<Protocolo & { user: User }>();
+  const columnHelper = createColumnHelper<Protocolo & { creator: User; editor?: User }>();
   const columns = [
     columnHelper.accessor("num_inscricao", {
       header: "N° de Inscrição",
@@ -390,7 +390,7 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="w-full">
-        <Table<Protocolo & { user: User }>
+        <Table<Protocolo & { creator: User; editor?: User }>
           data={protocolos}
           columns={columns}
         />
@@ -415,7 +415,7 @@ export const getServerSideProps: GetServerSideProps<
     };
   } else {
     const protocolos = await prisma.protocolo.findMany({
-      include: { user: true },
+      include: { creator: true, editor: true },
       where: {
         deleted_at: null,
       },

@@ -20,7 +20,8 @@ model User {
   updated_at DateTime? @updatedAt
   is_enabled Boolean   @default(true)
 
-  protocolos   Protocolo[]
+  created_protocolos   Protocolo[] @relation("creator")
+  edited_protocolos   Protocolo[] @relation("editor")
   @@map("users")
 }
 enum Role {
@@ -51,8 +52,11 @@ model Protocolo {
   updated_at       DateTime? @updatedAt
   deleted_at       DateTime?
 
-  user             User @relation(fields: [user_id], references: [id])
-  user_id          Int
+  creator            User @relation(name: "creator", fields: [creator_id], references: [id])
+  creator_id          Int
+
+  editor             User? @relation(name: "editor", fields: [editor_id], references: [id])
+  editor_id          Int?
 
   @@map("protocolos")
 }
