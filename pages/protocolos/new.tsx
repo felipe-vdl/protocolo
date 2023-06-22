@@ -76,7 +76,7 @@ const ProtocoloCreate = () => {
         const submitter = document.activeElement as HTMLButtonElement;
         setNotification(notificationInitialState);
         setIsLoading(true);
-        const response = await fetch("/api/protocolo/new", {
+        const response = await fetch("/api/protocolos/new", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

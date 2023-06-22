@@ -54,7 +54,7 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
   const handleSendWhatsApp = async () => {
     try {
       setDialog(dialogInitialState);
-      const response = await fetch("/api/protocolo/send-whatsapp", {
+      const response = await fetch("/api/protocolos/send-whatsapp", {
         method: "POST",
         body: JSON.stringify({
           id: protocolo.id,
@@ -144,7 +144,7 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
     try {
       setDialog(dialogInitialState);
       const response = await fetch(
-        `/api/protocolo/${protocolo.id}/deactivate`,
+        `/api/protocolos/${protocolo.id}/deactivate`,
         {
           method: "POST",
         }
@@ -207,7 +207,7 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
       {session && session.user.role === "SUPERADMIN" && (
         <>
           <Link
-            href={`/protocolo/${protocolo.id}/edit`}
+            href={`/protocolos/${protocolo.id}/edit`}
             className="ratio-square rounded bg-yellow-500 p-2 text-white transition-colors hover:bg-yellow-700"
             title={`Editar informações do protocolo.`}
           >

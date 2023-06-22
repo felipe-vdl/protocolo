@@ -38,7 +38,7 @@ const UserCreate = ({ user }: UserCreateProps) => {
       if (Object.values(form).every((entry) => entry.trim().length > 0)) {
         setNotification(notificationInitialState);
         setIsLoading(true);
-        const response = await fetch("/api/user/register", {
+        const response = await fetch("/api/users/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

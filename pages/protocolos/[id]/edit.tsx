@@ -72,7 +72,6 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
     telefone: protocolo.telefone.slice(4),
     enviar_whatsapp: protocolo.enviar_whatsapp,
   };
-
   const [form, setForm] =
     useState<z.infer<typeof editProtocoloFormSchema>>(formInitialState);
 
@@ -85,7 +84,7 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
         setNotification(notificationInitialState);
         setIsLoading(true);
 
-        const response = await fetch(`/api/protocolo/${protocolo.id}/update`, {
+        const response = await fetch(`/api/protocolos/${protocolo.id}/update`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

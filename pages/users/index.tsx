@@ -52,7 +52,7 @@ const RowActions = ({ user }: RowActionsProps) => {
   const handleResetPassword = async () => {
     try {
       setDialog(dialogInitialState);
-      const response = await fetch(`/api/user/${user.id}/resetpassword`, {
+      const response = await fetch(`/api/users/${user.id}/resetpassword`, {
         method: "POST",
       });
 
@@ -73,7 +73,7 @@ const RowActions = ({ user }: RowActionsProps) => {
   const handleDeactivate = async () => {
     try {
       setDialog(dialogInitialState);
-      const response = await fetch(`/api/user/${user.id}/deactivate`, {
+      const response = await fetch(`/api/users/${user.id}/deactivate`, {
         method: "POST",
       });
 
