@@ -381,7 +381,7 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
   return (
     <>
       <Head>
-        <title>Lista de Protocolos</title>
+        <title>Protocolos Arquivados</title>
         <meta
           name="description"
           content="Sistema Gerenciador de Projetos — Prefeitura de Mesquita."
@@ -390,6 +390,7 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="w-full">
+        <h1 className="font-bold text-xl text-center">Protocolos Arquivados</h1>
         <Table<Protocolo & { creator: User; editor?: User; }>
           data={protocolos}
           columns={columns}

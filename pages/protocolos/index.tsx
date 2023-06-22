@@ -390,6 +390,7 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="w-full">
+      <h1 className="font-bold text-xl text-center">Protocolos</h1>
         <Table<Protocolo & { creator: User; editor?: User }>
           data={protocolos}
           columns={columns}
