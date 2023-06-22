@@ -7,8 +7,8 @@ services:
       - "3000:3000"
     environment:
       - DATABASE_URL=mysql://user:password@database_address:3306/protocolo?schema=public
-      - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=secret
+      - NEXTAUTH_URL=http://localhost:3000 
+      - NEXTAUTH_SECRET=secret # Generate with 'openssl rand -base64 32'
       - DEFAULT_PASSWORD=admin
       - WHATSAPP_API_URL=https://example.com
       - WHATSAPP_API_KEY=secret
