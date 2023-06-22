@@ -59,7 +59,7 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
     notificationInitialState
   );
 
-  const [isCPF, setIsCpf] = useState<boolean>(true);
+  const [isCPF, setIsCpf] = useState<boolean>(!!protocolo.cpf);
 
   const formInitialState = {
     ddd: protocolo.telefone.slice(2, 4),
