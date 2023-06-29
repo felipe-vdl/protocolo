@@ -119,12 +119,12 @@ const UserCreate = ({ user }: UserCreateProps) => {
               placeholder="Nome Completo"
             />
             <input
-              type="email"
+              type="text"
               onChange={handleChange}
               name="email"
               value={form.email}
               className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="E-mail"
+              placeholder="E-mail ou Usuário"
             />
             <select
               onChange={handleSelect}

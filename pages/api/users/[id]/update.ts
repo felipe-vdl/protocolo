@@ -28,6 +28,10 @@ export default async function UpdateUserHandler(
 
     const { name, email, role, id } = req.body;
 
+    if (!email || !role || !name) {
+      return res.status(422).json({ message: "Informações inválidas." });
+    }
+
     if (typeof id === "object")
       return res.status(400).json({ message: "Usuário inválido." });
 

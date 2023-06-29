@@ -320,7 +320,7 @@ const UserCreate = ({ authUser, users }: UserIndexProps) => {
       }
     ),
     columnHelper.accessor("email", {
-      header: "Email",
+      header: "Email / Usuário",
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",

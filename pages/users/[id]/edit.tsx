@@ -126,7 +126,7 @@ const UserCreate = ({ user, authUser }: UserCreateProps) => {
               placeholder="Nome Completo"
             />
             <input
-              type="email"
+              type="text"
               onChange={handleChange}
               name="email"
               value={form.email}

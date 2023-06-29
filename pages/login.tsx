@@ -47,7 +47,7 @@ const LoginPage = () => {
     } else {
       setNotification({
         message: !form.email.trim().length
-          ? "Informe um E-mail"
+          ? "Informe um E-mail ou Usuário"
           : "Informe uma senha",
         type: "error",
       });
@@ -88,7 +88,7 @@ const LoginPage = () => {
             placeholder="E-mail"
             value={form.email}
             onChange={handleChange}
-            type="email"
+            type="text"
             className="flex-1 appearance-none rounded border-none bg-transparent py-1 px-2 leading-tight text-black focus:outline-none dark:text-white"
             autoComplete="nope"
           />

@@ -30,7 +30,7 @@ export default async function Signup(
 
       const { email, name, role } = req.body;
 
-      if (!email || !email.includes("@") || !role || !name) {
+      if (!email || !role || !name) {
         return res.status(422).json({ message: "Informações inválidas." });
       }
 
