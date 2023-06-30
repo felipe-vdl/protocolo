@@ -147,7 +147,9 @@ const ProtocoloCreate = () => {
                     ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
                     : ""
                 }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.creator.name.split(" ")[0].toUpperCase()}</span></p>
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.creator.name
+                  .split(" ")[0]
+                  .toUpperCase()}</span></p>
                 <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
                 <script>
                   const img = new Image();
@@ -243,32 +245,44 @@ const ProtocoloCreate = () => {
           )}
           <div className="flex flex-col gap-12">
             <div className="flex flex-col gap-6 px-1">
-              <input
-                type="text"
-                onChange={handleChange}
-                name="num_inscricao"
-                value={form.num_inscricao}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder="N° de Inscrição"
-              />
-              <input
-                type="text"
-                onChange={handleChange}
-                name="assunto"
-                value={form.assunto}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder="Assunto"
-                required={true}
-              />
-              <input
-                type="text"
-                onChange={handleChange}
-                name="anos_analise"
-                value={form.anos_analise}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder="Anos p/ Análise"
-                required={false}
-              />
+              <div className="flex flex-col">
+                <label htmlFor="num_inscricao">N° de Inscrição:</label>
+                <input
+                  id="num_inscricao"
+                  type="text"
+                  onChange={handleChange}
+                  name="num_inscricao"
+                  value={form.num_inscricao}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Digite o número (opcional)"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="assunto">Assunto:</label>
+                <input
+                  id="assunto"
+                  type="text"
+                  onChange={handleChange}
+                  name="assunto"
+                  value={form.assunto}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Descreva o assunto"
+                  required={true}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="anos_analise">Anos p/ Análise:</label>
+                <input
+                  id="anos_analise"
+                  type="text"
+                  onChange={handleChange}
+                  name="anos_analise"
+                  value={form.anos_analise}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Campo opcional"
+                  required={false}
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-6 px-1">
               <div className="flex w-full items-center">
@@ -295,50 +309,63 @@ const ProtocoloCreate = () => {
                   <label htmlFor="cnpj">CNPJ</label>
                 </div>
               </div>
-              <input
-                type="text"
-                onChange={handleChange}
-                name="nome"
-                value={form.nome}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder={isCPF ? "Nome" : "Razão Social"}
-                required={true}
-              />
+              <div className="flex flex-col">
+                <label htmlFor="nome">
+                  {isCPF ? "Nome:" : "Razão Social:"}
+                </label>
+                <input
+                  id="nome"
+                  type="text"
+                  onChange={handleChange}
+                  name="nome"
+                  value={form.nome}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder={isCPF ? "Nome Completo" : "Razão Social"}
+                  required={true}
+                />
+              </div>
               {isCPF ? (
                 <>
-                  <InputMask
-                    required
-                    className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                    mask="999.999.999-99"
-                    maskChar={null}
-                    placeholder="CPF"
-                    value={form.cpf}
-                    name="cpf"
-                    minLength={14}
-                    onChange={handleChange}
-                  />
-                  <div className="flex">
+                  <div className="flex flex-col">
+                    <label htmlFor="cpf">CPF:</label>
                     <InputMask
-                      value={form.ddd}
-                      onChange={handleChange}
-                      name="ddd"
-                      placeholder="DDD"
-                      mask="99"
-                      max={2}
-                      required={form.telefone.length > 0}
-                      className="w-[4rem] border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                    />
-                    <InputMask
-                      required={form.telefone.length > 0}
-                      minLength={14}
+                      id="cpf"
+                      required
+                      className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                      mask="999.999.999-99"
                       maskChar={null}
-                      className="flex-1 border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                      placeholder="Telefone Celular (WhatsApp)"
-                      mask="99999-9999"
-                      value={form.telefone}
-                      name="telefone"
+                      placeholder="111.111.111-11"
+                      value={form.cpf}
+                      name="cpf"
+                      minLength={14}
                       onChange={handleChange}
                     />
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="">Telefone Celular:</label>
+                    <div className="flex">
+                      <InputMask
+                        value={form.ddd}
+                        onChange={handleChange}
+                        name="ddd"
+                        placeholder="DDD"
+                        mask="99"
+                        max={2}
+                        required={form.telefone.length > 0}
+                        className="w-[4rem] border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                      />
+                      <InputMask
+                        required={form.telefone.length > 0}
+                        minLength={14}
+                        maskChar={null}
+                        className="flex-1 border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                        placeholder="Telefone Celular (WhatsApp)"
+                        mask="99999-9999"
+                        value={form.telefone}
+                        name="telefone"
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
@@ -356,17 +383,21 @@ const ProtocoloCreate = () => {
                   </div>
                 </>
               ) : (
-                <InputMask
-                  required
-                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  mask="99.999.999/9999-99"
-                  maskChar={null}
-                  placeholder="CNPJ"
-                  value={form.cnpj}
-                  name="cnpj"
-                  minLength={18}
-                  onChange={handleChange}
-                />
+                <div className="flex flex-col">
+                  <label htmlFor="cnpj">CNPJ:</label>
+                  <InputMask
+                    id="cnpj"
+                    required
+                    className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                    mask="99.999.999/9999-99"
+                    maskChar={null}
+                    placeholder="11.111.111/1111-11"
+                    value={form.cnpj}
+                    name="cnpj"
+                    minLength={18}
+                    onChange={handleChange}
+                  />
+                </div>
               )}
             </div>
           </div>
