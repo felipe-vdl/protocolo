@@ -381,7 +381,7 @@ const ProtocoloCreate = () => {
                         maskChar={null}
                         className="flex-1 border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
                         placeholder="Telefone Celular (WhatsApp)"
-                        mask="99999-9999"
+                        mask="9999-99999"
                         value={form.telefone}
                         name="telefone"
                         onChange={handleTelefoneChange}
