@@ -40,7 +40,7 @@ export default async function Signup(
         },
       });
       if (checkExistingUser) {
-        return res.status(409).json({ message: "E-mail já está em uso." });
+        return res.status(409).json({ message: "O E-mail / Usuário já está em uso." });
       }
 
       await prisma.user.create({

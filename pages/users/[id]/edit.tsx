@@ -117,48 +117,59 @@ const UserCreate = ({ user, authUser }: UserCreateProps) => {
             </div>
           )}
           <div className="flex flex-col gap-6 px-1">
-            <input
-              type="text"
-              onChange={handleChange}
-              name="name"
-              value={form.name}
-              className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="Nome Completo"
-            />
-            <input
-              type="text"
-              onChange={handleChange}
-              name="email"
-              value={form.email}
-              className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="E-mail"
-            />
-            <select
-              onChange={handleSelect}
-              name="role"
-              value={form.role}
-              className="rounded border-b border-zinc-500 bg-light-500 bg-transparent py-1 px-2 pb-1 text-light-50 outline-none dark:bg-dark-500 dark:text-dark-50"
-              placeholder="Confirmar Nova Senha"
-            >
-              <option value="" className="">
-                Nível do Usuário
-              </option>
-              {Object.values(Role).map((val) => (
-                <>
-                  {val === "SUPERADMIN" && authUser.role === "SUPERADMIN" ? (
-                    <option key={val} value={val}>
-                      {val}
-                    </option>
-                  ) : (
-                    val !== "SUPERADMIN" && (
+            <div className="flex flex-col">
+              <label htmlFor="name">Nome Completo:</label>
+              <input
+                id="name"
+                type="text"
+                onChange={handleChange}
+                name="name"
+                value={form.name}
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="Ex.: Arthur de Oliveira"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="email">E-mail / Usuário:</label>
+              <input
+                id="email"
+                type="text"
+                onChange={handleChange}
+                name="email"
+                value={form.email}
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="Informe um E-mail ou Usuário"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="role">Nível do Usuário:</label>
+              <select
+                onChange={handleSelect}
+                name="role"
+                value={form.role}
+                className="rounded border-b border-zinc-500 bg-light-500 bg-transparent py-1 px-2 pb-1 text-light-50 outline-none dark:bg-dark-500 dark:text-dark-50"
+                placeholder="Confirmar Nova Senha"
+              >
+                <option value="" className="">
+                  Selecione o nível do usuário
+                </option>
+                {Object.values(Role).map((val) => (
+                  <>
+                    {val === "SUPERADMIN" && authUser.role === "SUPERADMIN" ? (
                       <option key={val} value={val}>
                         {val}
                       </option>
-                    )
-                  )}
-                </>
-              ))}
-            </select>
+                    ) : (
+                      val !== "SUPERADMIN" && (
+                        <option key={val} value={val}>
+                          {val}
+                        </option>
+                      )
+                    )}
+                  </>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="flex w-full gap-8">
             <button
