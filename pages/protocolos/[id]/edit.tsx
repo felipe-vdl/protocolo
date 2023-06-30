@@ -205,6 +205,24 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
     setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
   };
 
+  const handleDDDChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
+    if (evt.target.value.length === 2)
+      document.getElementById("telefone").focus();
+  };
+
+  const handleTelefoneChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
+    if (evt.target.value.length === 0) document.getElementById("ddd").focus();
+  };
+
+  const handleTelefoneKeyboard = (
+    evt: React.KeyboardEvent<HTMLInputElement> & { target: { value: string } }
+  ) => {
+    if (evt.key === "Backspace" && evt.target.value.length === 0)
+      document.getElementById("ddd").focus();
+  };
+
   const handleToggle = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setForm((st) => ({ ...st, [evt.target.name]: !st[evt.target.name] }));
   };
@@ -345,19 +363,22 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label htmlFor="">Telefone Celular:</label>
+                    <label htmlFor="ddd">Telefone Celular:</label>
                     <div className="flex">
                       <InputMask
+                        id="ddd"
                         value={form.ddd}
-                        onChange={handleChange}
+                        onChange={handleDDDChange}
                         name="ddd"
                         placeholder="DDD"
+                        maskChar={null}
                         mask="99"
                         max={2}
                         required={form.telefone.length > 0}
                         className="w-[4rem] border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
                       />
                       <InputMask
+                        id="telefone"
                         required={form.telefone.length > 0}
                         minLength={14}
                         maskChar={null}
@@ -366,7 +387,8 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
                         mask="99999-9999"
                         value={form.telefone}
                         name="telefone"
-                        onChange={handleChange}
+                        onChange={handleTelefoneChange}
+                        onKeyDown={handleTelefoneKeyboard}
                       />
                     </div>
                   </div>
