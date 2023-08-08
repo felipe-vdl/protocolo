@@ -11,10 +11,10 @@ import { AppNotification } from "@/types/interfaces";
 import React, { useState } from "react";
 
 interface UserCreateProps {
-  user: UserInfo;
+  authUser: UserInfo;
 }
 
-const UserCreate = ({ user }: UserCreateProps) => {
+const UserCreate = ({ authUser }: UserCreateProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const notificationInitialState: AppNotification = { message: "", type: "" };
   const [notification, setNotification] = useState<AppNotification>(
@@ -84,7 +84,7 @@ const UserCreate = ({ user }: UserCreateProps) => {
       <Head>
         <title>Novo Usuário</title>
       </Head>
-      <div className="m-auto w-full sm:w-[25rem] md:w-[30rem] lg:w-[38rem] flex flex-col items-center rounded-[12px] bg-light-500 text-light-50 dark:text-dark-50 shadow shadow-black/20 dark:bg-dark-500">
+      <div className="m-auto flex w-full flex-col items-center rounded-[12px] bg-light-500 text-light-50 shadow shadow-black/20 dark:bg-dark-500 dark:text-dark-50 sm:w-[25rem] md:w-[30rem] lg:w-[38rem]">
         <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center text-white">
           <h2 className="text-2xl font-light">Novo Usuário</h2>
         </div>
@@ -110,42 +110,63 @@ const UserCreate = ({ user }: UserCreateProps) => {
             </div>
           )}
           <div className="flex flex-col gap-6 px-1">
-            <input
-              type="text"
-              onChange={handleChange}
-              name="name"
-              value={form.name}
-              className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="Nome Completo"
-            />
-            <input
-              type="email"
-              onChange={handleChange}
-              name="email"
-              value={form.email}
-              className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-              placeholder="E-mail"
-            />
-            <select
-              onChange={handleSelect}
-              name="role"
-              value={form.role}
-              className="rounded border-b border-zinc-500 bg-light-500 bg-transparent py-1 px-2 pb-1 text-light-50 outline-none dark:bg-dark-500 dark:text-dark-50"
-              placeholder="Confirmar Nova Senha"
-            >
-              <option value="" className="">
-                Nível do Usuário
-              </option>
-              {Object.values(Role).map((val) => (
-                <option key={val} value={val}>
-                  {val}
+            <div className="flex flex-col">
+              <label htmlFor="name">Nome Completo:</label>
+              <input
+                id="name"
+                type="text"
+                onChange={handleChange}
+                name="name"
+                value={form.name}
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="Nome completo do usuário"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="email">E-mail / Usuário:</label>
+              <input
+                id="email"
+                type="text"
+                onChange={handleChange}
+                name="email"
+                value={form.email}
+                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                placeholder="Informe um E-mail ou Usuário"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="role">Nível do Usuário:</label>
+              <select
+                onChange={handleSelect}
+                name="role"
+                value={form.role}
+                className="rounded border-b border-zinc-500 bg-light-500 bg-transparent py-1 px-2 pb-1 text-light-50 outline-none dark:bg-dark-500 dark:text-dark-50"
+                placeholder="Confirmar Nova Senha"
+              >
+                <option value="" className="">
+                  Selecione o nível do usuário
                 </option>
-              ))}
-            </select>
+                {Object.values(Role).map((val) => (
+                  <>
+                    {val === "SUPERADMIN" && authUser.role === "SUPERADMIN" ? (
+                      <option key={val} value={val}>
+                        {val}
+                      </option>
+                    ) : (
+                      val !== "SUPERADMIN" && (
+                        <option key={val} value={val}>
+                          {val}
+                        </option>
+                      )
+                    )}
+                  </>
+                ))}
+              </select>
+            </div>
           </div>
           <button
             disabled={isLoading}
-            className="rounded-[10px] bg-roxo p-1 text-xl font-light hover:bg-indigo-700 disabled:bg-indigo-400 text-white"
+            className="rounded-[10px] bg-roxo p-1 text-xl font-light text-white hover:bg-indigo-700 disabled:bg-indigo-400"
           >
             {isLoading ? "Criando usuário..." : "Criar"}
           </button>
@@ -175,8 +196,9 @@ export const getServerSideProps: GetServerSideProps<UserCreateProps> = async (
       },
     });
     if (authUser.role === "USER") {
-      const queryParams = "?notificationMessage=Usu%C3%A1rio%20n%C3%A3o%20tem%20permiss%C3%A3o&notificationType=error"
-      
+      const queryParams =
+        "?notificationMessage=Usu%C3%A1rio%20n%C3%A3o%20tem%20permiss%C3%A3o&notificationType=error";
+
       return {
         redirect: {
           permanent: false,
@@ -188,7 +210,7 @@ export const getServerSideProps: GetServerSideProps<UserCreateProps> = async (
 
     return {
       props: {
-        user: {
+        authUser: {
           id: authUser.id,
           name: authUser.name,
           email: authUser.email,

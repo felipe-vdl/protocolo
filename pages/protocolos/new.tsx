@@ -110,36 +110,46 @@ const ProtocoloCreate = () => {
                 <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
                 <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
                 <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
-                ${protocolo.num_inscricao
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
-              : ""
-            }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${protocolo.processo
-            }</span></p>
+                ${
+                  protocolo.num_inscricao
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
+                    : ""
+                }
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
+                  protocolo.processo
+                }</span></p>
                 <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
-              protocolo.created_at
-            ).toLocaleDateString("pt-br")}</span></p>
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${protocolo.assunto
-            }</span></p>
-                ${protocolo.anos_analise
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
-              : ""
-            }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${protocolo.nome
-            }</span></p>
-                ${protocolo.cpf
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
-              : ""
-            }
-                ${protocolo.cnpj
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${protocolo.cnpj}</span></p>`
-              : ""
-            }
-                ${protocolo.telefone
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
-              : ""
-            }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.creator.name.toUpperCase()}</span></p>
+                  protocolo.created_at
+                ).toLocaleDateString("pt-br")}</span></p>
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
+                  protocolo.assunto
+                }</span></p>
+                ${
+                  protocolo.anos_analise
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
+                    : ""
+                }
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
+                  protocolo.nome
+                }</span></p>
+                ${
+                  protocolo.cpf
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
+                    : ""
+                }
+                ${
+                  protocolo.cnpj
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${protocolo.cnpj}</span></p>`
+                    : ""
+                }
+                ${
+                  protocolo.telefone
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
+                    : ""
+                }
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.creator.name
+                  .split(" ")[0]
+                  .toUpperCase()}</span></p>
                 <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
                 <script>
                   const img = new Image();
@@ -180,6 +190,24 @@ const ProtocoloCreate = () => {
     setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
   };
 
+  const handleDDDChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
+    if (evt.target.value.length === 2)
+      document.getElementById("telefone").focus();
+  };
+
+  const handleTelefoneChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
+    if (evt.target.value.length === 0) document.getElementById("ddd").focus();
+  };
+
+  const handleTelefoneKeyboard = (
+    evt: React.KeyboardEvent<HTMLInputElement> & { target: { value: string } }
+  ) => {
+    if (evt.key === "Backspace" && evt.target.value.length === 0)
+      document.getElementById("ddd").focus();
+  };
+
   const handleToggle = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setForm((st) => ({ ...st, [evt.target.name]: !st[evt.target.name] }));
   };
@@ -187,21 +215,21 @@ const ProtocoloCreate = () => {
   const handleRadioChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     if (evt.target.value === "cpf") {
       setIsCpf(true);
-      setForm(st => ({
+      setForm((st) => ({
         ...st,
         cnpj: "",
       }));
     } else {
       setIsCpf(false);
-      setForm(st => ({
+      setForm((st) => ({
         ...st,
         cpf: "",
         ddd: "",
         telefone: "",
-        enviar_whatsapp: false
+        enviar_whatsapp: false,
       }));
     }
-  }
+  };
 
   return (
     <>
@@ -218,10 +246,11 @@ const ProtocoloCreate = () => {
         >
           {notification.message && (
             <div
-              className={`flex w-full items-center rounded-[8px] px-3 py-1 text-center ${notification.type === "error"
-                ? "bg-red-300 text-red-800"
-                : "bg-green-300 text-green-800"
-                }`}
+              className={`flex w-full items-center rounded-[8px] px-3 py-1 text-center ${
+                notification.type === "error"
+                  ? "bg-red-300 text-red-800"
+                  : "bg-green-300 text-green-800"
+              }`}
             >
               <p className="mx-auto">{notification.message}</p>
               <span
@@ -234,88 +263,131 @@ const ProtocoloCreate = () => {
           )}
           <div className="flex flex-col gap-12">
             <div className="flex flex-col gap-6 px-1">
-              <input
-                type="text"
-                onChange={handleChange}
-                name="num_inscricao"
-                value={form.num_inscricao}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder="N° de Inscrição"
-              />
-              <input
-                type="text"
-                onChange={handleChange}
-                name="assunto"
-                value={form.assunto}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder="Assunto"
-                required={true}
-              />
-              <input
-                type="text"
-                onChange={handleChange}
-                name="anos_analise"
-                value={form.anos_analise}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder="Anos p/ Análise"
-                required={false}
-              />
+              <div className="flex flex-col">
+                <label htmlFor="num_inscricao">N° de Inscrição:</label>
+                <input
+                  id="num_inscricao"
+                  type="text"
+                  onChange={handleChange}
+                  name="num_inscricao"
+                  value={form.num_inscricao}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Digite o número (opcional)"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="assunto">Assunto:</label>
+                <input
+                  id="assunto"
+                  type="text"
+                  onChange={handleChange}
+                  name="assunto"
+                  value={form.assunto}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Descreva o assunto"
+                  required={true}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="anos_analise">Anos p/ Análise:</label>
+                <input
+                  id="anos_analise"
+                  type="text"
+                  onChange={handleChange}
+                  name="anos_analise"
+                  value={form.anos_analise}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Campo opcional"
+                  required={false}
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-6 px-1">
               <div className="flex w-full items-center">
                 <div className="flex flex-1 items-center justify-center gap-2">
-                  <input onChange={handleRadioChange} type="radio" id="cpf" name="tipo" value="cpf" checked={isCPF} />
+                  <input
+                    onChange={handleRadioChange}
+                    type="radio"
+                    id="cpf"
+                    name="tipo"
+                    value="cpf"
+                    checked={isCPF}
+                  />
                   <label htmlFor="cpf">CPF</label>
                 </div>
                 <div className="flex flex-1 items-center justify-center gap-2">
-                  <input onChange={handleRadioChange} type="radio" id="cnpj" name="tipo" value="cnpj" checked={!isCPF} />
+                  <input
+                    onChange={handleRadioChange}
+                    type="radio"
+                    id="cnpj"
+                    name="tipo"
+                    value="cnpj"
+                    checked={!isCPF}
+                  />
                   <label htmlFor="cnpj">CNPJ</label>
                 </div>
               </div>
-              <input
-                type="text"
-                onChange={handleChange}
-                name="nome"
-                value={form.nome}
-                className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                placeholder={isCPF ? "Nome" : "Razão Social"}
-                required={true}
-              />
+              <div className="flex flex-col">
+                <label htmlFor="nome">
+                  {isCPF ? "Nome:" : "Razão Social:"}
+                </label>
+                <input
+                  id="nome"
+                  type="text"
+                  onChange={handleChange}
+                  name="nome"
+                  value={form.nome}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder={isCPF ? "Nome Completo" : "Razão Social"}
+                  required={true}
+                />
+              </div>
               {isCPF ? (
                 <>
-                  <InputMask
-                    required
-                    className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                    mask="999.999.999-99"
-                    maskChar={null}
-                    placeholder="CPF"
-                    value={form.cpf}
-                    name="cpf"
-                    minLength={14}
-                    onChange={handleChange}
-                  />
-                  <div className="flex">
+                  <div className="flex flex-col">
+                    <label htmlFor="cpf">CPF:</label>
                     <InputMask
-                      value={form.ddd}
-                      onChange={handleChange}
-                      name="ddd"
-                      placeholder="DDD"
-                      mask="99"
-                      max={2}
-                      required={form.telefone.length > 0}
-                      className="w-[4rem] border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                    />
-                    <InputMask
-                      required={form.telefone.length > 0}
-                      minLength={14}
+                      id="cpf"
+                      required
+                      className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                      mask="999.999.999-99"
                       maskChar={null}
-                      className="flex-1 border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                      placeholder="Telefone Celular (WhatsApp)"
-                      mask="99999-9999"
-                      value={form.telefone}
-                      name="telefone"
+                      placeholder="111.111.111-11"
+                      value={form.cpf}
+                      name="cpf"
+                      minLength={14}
                       onChange={handleChange}
                     />
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="ddd">Telefone Celular:</label>
+                    <div className="flex">
+                      <InputMask
+                        id="ddd"
+                        value={form.ddd}
+                        onChange={handleDDDChange}
+                        name="ddd"
+                        placeholder="DDD"
+                        maskChar={null}
+                        mask="99"
+                        max={2}
+                        required={form.telefone.length > 0}
+                        className="w-[4rem] border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                      />
+                      <InputMask
+                        id="telefone"
+                        required={form.telefone.length > 0}
+                        minLength={14}
+                        maskChar={null}
+                        className="flex-1 border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                        placeholder="Telefone Celular (WhatsApp)"
+                        mask="9999-99999"
+                        value={form.telefone}
+                        name="telefone"
+                        onChange={handleTelefoneChange}
+                        onKeyDown={handleTelefoneKeyboard}
+                      />
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
@@ -333,40 +405,46 @@ const ProtocoloCreate = () => {
                   </div>
                 </>
               ) : (
-                <InputMask
-                  required
-                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  mask="99.999.999/9999-99"
-                  maskChar={null}
-                  placeholder="CNPJ"
-                  value={form.cnpj}
-                  name="cnpj"
-                  minLength={18}
-                  onChange={handleChange}
-                />
+                <div className="flex flex-col">
+                  <label htmlFor="cnpj">CNPJ:</label>
+                  <InputMask
+                    id="cnpj"
+                    required
+                    className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                    mask="99.999.999/9999-99"
+                    maskChar={null}
+                    placeholder="11.111.111/1111-11"
+                    value={form.cnpj}
+                    name="cnpj"
+                    minLength={18}
+                    onChange={handleChange}
+                  />
+                </div>
               )}
             </div>
           </div>
           <div className="flex gap-8">
-            <button
-              title="Salvar o protocolo sem imprimir."
-              value="SAVE"
-              disabled={isLoading}
-              className="flex flex-1 items-center justify-between gap-2 rounded-[10px] bg-green-600 p-1 px-3 text-lg font-light text-white hover:bg-green-500 disabled:bg-green-400"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                viewBox="0 0 16 16"
+            {isCPF && (
+              <button
+                title="Salvar o protocolo sem imprimir."
+                value="SAVE"
+                disabled={isLoading}
+                className="flex flex-1 items-center justify-between gap-2 rounded-[10px] bg-green-600 p-1 px-3 text-lg font-light text-white hover:bg-green-500 disabled:bg-green-400"
               >
-                <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.026A2 2 0 0 0 2 14h6.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.606-3.446l-.367-.225L8 9.586l-1.239-.757ZM16 4.697v4.974A4.491 4.491 0 0 0 12.5 8a4.49 4.49 0 0 0-1.965.45l-.338-.207L16 4.697Z" />
-                <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686Z" />
-              </svg>
-              <span>{isLoading ? "Salvando..." : "Salvar"}</span>
-              <span></span>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.026A2 2 0 0 0 2 14h6.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.606-3.446l-.367-.225L8 9.586l-1.239-.757ZM16 4.697v4.974A4.491 4.491 0 0 0 12.5 8a4.49 4.49 0 0 0-1.965.45l-.338-.207L16 4.697Z" />
+                  <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686Z" />
+                </svg>
+                <span>{isLoading ? "Salvando..." : "Salvar"}</span>
+                <span></span>
+              </button>
+            )}
             <button
               title="Salvar e imprimir o protocolo."
               value="PRINT"

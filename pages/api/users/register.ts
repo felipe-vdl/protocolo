@@ -30,7 +30,7 @@ export default async function Signup(
 
       const { email, name, role } = req.body;
 
-      if (!email || !email.includes("@") || !role || !name) {
+      if (!email || !role || !name) {
         return res.status(422).json({ message: "Informações inválidas." });
       }
 
@@ -40,7 +40,7 @@ export default async function Signup(
         },
       });
       if (checkExistingUser) {
-        return res.status(409).json({ message: "E-mail já está em uso." });
+        return res.status(409).json({ message: "O E-mail / Usuário já está em uso." });
       }
 
       await prisma.user.create({
