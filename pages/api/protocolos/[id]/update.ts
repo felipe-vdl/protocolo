@@ -29,9 +29,9 @@ export default async function NewProtocolo(
       return res.status(401).json({ message: "Usuário não está autenticado." });
     }
     
-    if (session.user.role !== "SUPERADMIN") {
+    /* if (session.user.role !== "SUPERADMIN") {
       return res.status(403).json({ message: "Permissão negada." });
-    }
+    } */
 
     const {
       num_inscricao,

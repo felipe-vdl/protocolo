@@ -487,7 +487,7 @@ export const getServerSideProps: GetServerSideProps<
     };
   }
 
-  if (session.user.role !== "SUPERADMIN") {
+  /* if (session.user.role !== "SUPERADMIN") {
     return {
       redirect: {
         destination: "/",
@@ -495,7 +495,7 @@ export const getServerSideProps: GetServerSideProps<
       },
       props: {},
     };
-  }
+  } */
 
   const id = +context.params.id;
   const protocolo = await prisma.protocolo.findFirst({
