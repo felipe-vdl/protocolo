@@ -7,7 +7,7 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { prisma } from "@/db";
 import { useSession } from "next-auth/react";
 
-import { User, Protocolo } from "@prisma/client";
+import { User, Capa } from "@prisma/client";
 import Head from "next/head";
 import Table from "@/components/Table/Table";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -21,9 +21,9 @@ import FlyingNotification from "@/components/UI/FlyingNotification";
 import Link from "next/link";
 
 interface RowActionsProps {
-  protocolo: Protocolo & { creator: User, editor?: User };
+  capa: Capa & { creator: User, editor?: User };
 }
-const RowActions = ({ protocolo }: RowActionsProps) => {
+const RowActions = ({ capa }: RowActionsProps) => {
   const [notification, setNotification] = useAtom(notificationAtom);
   const { data: session } = useSession();
 
@@ -54,10 +54,10 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
   const handleSendWhatsApp = async () => {
     try {
       setDialog(dialogInitialState);
-      const response = await fetch("/api/protocolos/send-whatsapp", {
+      const response = await fetch("/api/capas/send-whatsapp", {
         method: "POST",
         body: JSON.stringify({
-          id: protocolo.id,
+          id: capa.id,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -88,43 +88,43 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
           <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
           <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
           ${
-            protocolo.num_inscricao
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
+            capa.num_inscricao
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${capa.num_inscricao}</span></p>`
               : ""
           }
           <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
-            protocolo.processo
+            capa.processo
           }</span></p>
           <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
-            protocolo.created_at
+            capa.created_at
           ).toLocaleDateString("pt-br")}</span></p>
           <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
-            protocolo.assunto
+            capa.assunto
           }</span></p>
           ${
-            protocolo.anos_analise
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
+            capa.anos_analise
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${capa.anos_analise}</span></p>`
               : ""
           }
           <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
-            protocolo.nome
+            capa.nome
           }</span></p>
           ${
-            protocolo.cpf
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
+            capa.cpf
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${capa.cpf}</span></p>`
               : ""
           }
           ${
-            protocolo.cnpj
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${protocolo.cnpj}</span></p>`
+            capa.cnpj
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${capa.cnpj}</span></p>`
               : ""
           }
           ${
-            protocolo.telefone
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
+            capa.telefone
+              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${capa.telefone}</span></p>`
               : ""
           }
-          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.creator.name.split(" ")[0].toUpperCase()}</span></p>
+          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${capa.creator.name.split(" ")[0].toUpperCase()}</span></p>
           <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
           <script>
             const img = new Image();
@@ -144,7 +144,7 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
     try {
       setDialog(dialogInitialState);
       const response = await fetch(
-        `/api/protocolos/${protocolo.id}/deactivate`,
+        `/api/capas/${capa.id}/deactivate`,
         {
           method: "POST",
         }
@@ -168,7 +168,7 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
     <div className="flex justify-start gap-2">
       <button
         className="ratio-square rounded bg-blue-500 p-2 text-white transition-colors hover:bg-blue-700"
-        title="Imprimir protocolo."
+        title="Imprimir capa."
         onClick={handlePrint}
       >
         <svg
@@ -182,7 +182,7 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
           <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
         </svg>
       </button>
-      {protocolo.telefone && (
+      {capa.telefone && (
         <button
           className="ratio-square rounded bg-green-600 p-2 text-white transition-colors hover:bg-green-700"
           title="Notificar por WhatsApp."
@@ -207,9 +207,9 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
       {session && session.user.role === "SUPERADMIN" && (
         <>
           <Link
-            href={`/protocolos/${protocolo.id}/edit`}
+            href={`/capas/${capa.id}/edit`}
             className="ratio-square rounded bg-yellow-500 p-2 text-white transition-colors hover:bg-yellow-700"
-            title={`Editar informações do protocolo.`}
+            title={`Editar informações do capa.`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -221,14 +221,14 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
               <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
             </svg>
           </Link>
-          {!protocolo.deleted_at ? (
+          {!capa.deleted_at ? (
             <button
               className="ratio-square rounded bg-red-500 p-2 text-white transition-colors hover:bg-red-700"
-              title={`Arquivar o protocolo.`}
+              title={`Arquivar o capa.`}
               onClick={() =>
                 handleConfirmation(
                   handleDeactivate,
-                  "Você está prestes a arquivar o protocolo."
+                  "Você está prestes a arquivar o capa."
                 )
               }
             >
@@ -252,11 +252,11 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
           ) : (
             <button
               className="ratio-square rounded bg-green-500 p-2 text-white transition-colors hover:bg-green-700"
-              title={`Desarquivar o protocolo.`}
+              title={`Desarquivar o capa.`}
               onClick={() =>
                 handleConfirmation(
                   handleDeactivate,
-                  "Você está prestes a desarquivar o protocolo."
+                  "Você está prestes a desarquivar o capa."
                 )
               }
             >
@@ -291,11 +291,11 @@ const RowActions = ({ protocolo }: RowActionsProps) => {
   );
 };
 
-interface ProtocoloIndexProps {
-  protocolos: (Protocolo & { creator: User; editor?: User; })[];
+interface CapaIndexProps {
+  capas: (Capa & { creator: User; editor?: User; })[];
 }
-const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
-  const columnHelper = createColumnHelper<Protocolo & { creator: User; editor?: User }>();
+const CapaIndex = ({ capas }: CapaIndexProps) => {
+  const columnHelper = createColumnHelper<Capa & { creator: User; editor?: User }>();
   const columns = [
     columnHelper.accessor("num_inscricao", {
       header: "N° de Inscrição",
@@ -371,7 +371,7 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
     columnHelper.display({
       id: "actions",
       header: "Ações",
-      cell: (props) => <RowActions protocolo={props.row.original} />,
+      cell: (props) => <RowActions capa={props.row.original} />,
       size: 70,
     }),
   ];
@@ -381,7 +381,7 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
   return (
     <>
       <Head>
-        <title>Protocolos Arquivados</title>
+        <title>Capas Arquivados</title>
         <meta
           name="description"
           content="Sistema Gerenciador de Projetos — Prefeitura de Mesquita."
@@ -390,9 +390,9 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="w-full">
-        <h1 className="font-bold text-xl text-center">Protocolos Arquivados</h1>
-        <Table<Protocolo & { creator: User; editor?: User; }>
-          data={protocolos}
+        <h1 className="font-bold text-xl text-center">Capas Arquivados</h1>
+        <Table<Capa & { creator: User; editor?: User; }>
+          data={capas}
           columns={columns}
         />
       </div>
@@ -402,7 +402,7 @@ const ProtocoloIndex = ({ protocolos }: ProtocoloIndexProps) => {
 };
 
 export const getServerSideProps: GetServerSideProps<
-  ProtocoloIndexProps
+  CapaIndexProps
 > = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
@@ -423,7 +423,7 @@ export const getServerSideProps: GetServerSideProps<
       props: {},
     };
   } else {
-    const protocolos = await prisma.protocolo.findMany({
+    const capas = await prisma.capa.findMany({
       include: { creator: true, editor: true },
       where: {
         NOT: {
@@ -433,11 +433,11 @@ export const getServerSideProps: GetServerSideProps<
     });
     return {
       props: {
-        protocolos,
+        capas,
       },
     };
   }
 };
 
-ProtocoloIndex.layout = "dashboard";
-export default ProtocoloIndex;
+CapaIndex.layout = "dashboard";
+export default CapaIndex;

@@ -2,92 +2,73 @@ import Head from "next/head";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { Protocolo, User } from "@prisma/client";
+import { Assunto, Capa, User } from "@prisma/client";
 
 import React, { useState } from "react";
 import { AppNotification } from "@/types/interfaces";
 import InputMask from "react-input-mask";
 import z from "zod";
+import { prisma } from "@/db";
 
-interface NewProtocoloResponse {
+interface NewCapaResponse {
   message: string;
-  protocolo?: Protocolo & {
+  capa?: Capa & {
     creator: User;
     editor?: User;
   };
 }
 
-const protocoloFormSchema = z.object({
-  num_inscricao: z.string().optional(),
-  assunto: z.string(),
-  anos_analise: z.string().optional(),
-  nome: z.string().min(1, "Informe um nome."),
-  cpf: z.union([
-    z.string().length(0, "CPF Inválido"),
-    z.string().min(14, "CPF Inválido"),
-  ]),
-  cnpj: z.union([
-    z.string().length(0, "CNPJ Inválido"),
-    z.string().min(18, "CNPJ Inválido"),
-  ]),
-  ddd: z
-    .union([
-      z.string().length(0, "DDD Inválido"),
-      z.string().length(2, "DDD Inválido"),
-    ])
-    .optional(),
-  telefone: z
-    .union([
-      z.string().length(0, "Telefone Inválido"),
-      z.string().min(9, "Telefone Inválido"),
-    ])
-    .optional(),
-  enviar_whatsapp: z.boolean(),
-});
+const capaFormSchema = z
+  .object({
+    num_protocolo: z.string(),
+    distribuicao: z.string().datetime(),
+    volume: z.string().optional(),
+    assunto: z.string(),
+    outro_assunto: z.string(),
+    observacao: z.string().optional(),
+  })
+  .refine(
+    (data) =>
+      data.assunto === "Outro" && data.outro_assunto.trim().length === 0,
+    { message: "É necessário descrever o assunto." }
+  );
 
-const ProtocoloCreate = () => {
+type CapaCreateProps = {
+  assuntos: Assunto[];
+};
+
+const CapaCreate = ({ assuntos }: CapaCreateProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const notificationInitialState: AppNotification = { message: "", type: "" };
   const [notification, setNotification] = useState<AppNotification>(
     notificationInitialState
   );
 
-  const [isCPF, setIsCpf] = useState<boolean>(true);
-
   const formInitialState = {
-    ddd: "",
-    num_inscricao: "",
+    num_protocolo: "",
+    distribuicao: "",
+    volume: "",
     assunto: "",
-    anos_analise: "",
-    nome: "",
-    cpf: "",
-    cnpj: "",
-    telefone: "",
-    enviar_whatsapp: false,
+    outro_assunto: "",
+    observacao: "",
   };
   const [form, setForm] =
-    useState<z.infer<typeof protocoloFormSchema>>(formInitialState);
+    useState<z.infer<typeof capaFormSchema>>(formInitialState);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     try {
-      const result = protocoloFormSchema.safeParse(form);
+      const result = capaFormSchema.safeParse(form);
       if (result.success) {
         const submitter = document.activeElement as HTMLButtonElement;
         setNotification(notificationInitialState);
         setIsLoading(true);
-        const response = await fetch("/api/protocolos/new", {
+        const response = await fetch("/api/capas/new", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            ...result.data,
-            telefone:
-              result.data.telefone.length > 0
-                ? `55${result.data.ddd}${result.data.telefone}`
-                : "",
-          }),
+          body: JSON.stringify(result.data),
         });
 
         if (!response.ok) {
@@ -95,74 +76,13 @@ const ProtocoloCreate = () => {
           throw new Error(error.message);
         }
 
-        const { message, protocolo }: NewProtocoloResponse =
-          await response.json();
+        const { message, capa }: NewCapaResponse = await response.json();
         setNotification({ type: "success", message });
         setForm(formInitialState);
         setIsLoading(false);
 
         if (submitter.value === "PRINT") {
-          let win = window.open();
-          win.document.write(`
-            <html>
-              <head><title>Senha</title></head>
-              <body style="margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-start; font-family: Arial, Helvetica, sans-serif;">
-                <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
-                <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
-                <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
-                ${
-                  protocolo.num_inscricao
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
-                    : ""
-                }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.processo
-                }</span></p>
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
-                  protocolo.created_at
-                ).toLocaleDateString("pt-br")}</span></p>
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.assunto
-                }</span></p>
-                ${
-                  protocolo.anos_analise
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
-                    : ""
-                }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.nome
-                }</span></p>
-                ${
-                  protocolo.cpf
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
-                    : ""
-                }
-                ${
-                  protocolo.cnpj
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${protocolo.cnpj}</span></p>`
-                    : ""
-                }
-                ${
-                  protocolo.telefone
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
-                    : ""
-                }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.creator.name
-                  .split(" ")[0]
-                  .toUpperCase()}</span></p>
-                <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
-                <script>
-                  const img = new Image();
-                  img.src = "/logo-mesquita192.png";
-                  document.querySelector("img").src = img.src;
-                  img.onload = () => {
-                    window.print();
-                    window.close();
-                  };
-                </script>
-              </body>
-            </html>
-          `);
+          // print capa
         }
       } else if (result.success === false) {
         const { errors } = result.error;
@@ -171,10 +91,6 @@ const ProtocoloCreate = () => {
           type: "error",
           message: `${errors.map((err) => err.message).join(", ")}.`,
         });
-        /* setNotification({
-          type: "error",
-          message: "Preencha as informações.",
-        }); */
         setIsLoading(false);
       }
     } catch (error) {
@@ -186,59 +102,20 @@ const ProtocoloCreate = () => {
     }
   };
 
-  const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
-  };
-
-  const handleDDDChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
-    if (evt.target.value.length === 2)
-      document.getElementById("telefone").focus();
-  };
-
-  const handleTelefoneChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
-    if (evt.target.value.length === 0) document.getElementById("ddd").focus();
-  };
-
-  const handleTelefoneKeyboard = (
-    evt: React.KeyboardEvent<HTMLInputElement> & { target: { value: string } }
+  const handleChange = (
+    evt: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    if (evt.key === "Backspace" && evt.target.value.length === 0)
-      document.getElementById("ddd").focus();
-  };
-
-  const handleToggle = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((st) => ({ ...st, [evt.target.name]: !st[evt.target.name] }));
-  };
-
-  const handleRadioChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    if (evt.target.value === "cpf") {
-      setIsCpf(true);
-      setForm((st) => ({
-        ...st,
-        cnpj: "",
-      }));
-    } else {
-      setIsCpf(false);
-      setForm((st) => ({
-        ...st,
-        cpf: "",
-        ddd: "",
-        telefone: "",
-        enviar_whatsapp: false,
-      }));
-    }
+    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
   };
 
   return (
     <>
       <Head>
-        <title>Novo Protocolo</title>
+        <title>Nova Capa</title>
       </Head>
       <div className="m-auto flex w-full flex-col items-center rounded-[12px] bg-light-500 text-light-50 shadow shadow-black/20 dark:bg-dark-500 dark:text-dark-50 sm:w-[25rem] md:w-[30rem] lg:w-[38rem]">
         <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center">
-          <h2 className="text-2xl font-light text-white">Novo Protocolo</h2>
+          <h2 className="text-2xl font-light text-white">Nova Capa</h2>
         </div>
         <form
           className="flex w-full flex-col gap-8 p-4 pt-8"
@@ -264,27 +141,59 @@ const ProtocoloCreate = () => {
           <div className="flex flex-col gap-12">
             <div className="flex flex-col gap-6 px-1">
               <div className="flex flex-col">
-                <label htmlFor="num_inscricao">N° de Inscrição:</label>
+                <label htmlFor="num_protocolo">N° do Protocolo:</label>
                 <input
-                  id="num_inscricao"
+                  id="num_protocolo"
                   type="text"
                   onChange={handleChange}
-                  name="num_inscricao"
-                  value={form.num_inscricao}
+                  name="num_protocolo"
+                  value={form.num_protocolo}
                   className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  placeholder="Digite o número (opcional)"
+                  placeholder="__/___/__"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="distribuicao">Distribuição:</label>
+                <input
+                  id="distribuicao"
+                  type="text"
+                  onChange={handleChange}
+                  name="distribuicao"
+                  value={form.distribuicao}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Data de distribuição"
                 />
               </div>
               <div className="flex flex-col">
                 <label htmlFor="assunto">Assunto:</label>
-                <input
+                <select
                   id="assunto"
-                  type="text"
                   onChange={handleChange}
                   name="assunto"
                   value={form.assunto}
                   className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  placeholder="Descreva o assunto"
+                  placeholder="Selecione o Assunto"
+                  required={true}
+                >
+                  <option value="">Selecione o Assunto</option>
+                  {assuntos.map((assunto) => (
+                    <option value={assunto.name} key={assunto.name}>
+                      {assunto.name}
+                    </option>
+                  ))}
+                  <option value="Outro">Outro</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="assunto">Descreva o Assunto:</label>
+                <input
+                  id="outro_assunto"
+                  type="text"
+                  onChange={handleChange}
+                  name="outro_assunto"
+                  value={form.outro_assunto}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Descreva o assunto."
                   required={true}
                 />
               </div>
@@ -426,7 +335,7 @@ const ProtocoloCreate = () => {
           <div className="flex gap-8">
             {isCPF && (
               <button
-                title="Salvar o protocolo sem imprimir."
+                title="Salvar o capa sem imprimir."
                 value="SAVE"
                 disabled={isLoading}
                 className="flex flex-1 items-center justify-between gap-2 rounded-[10px] bg-green-600 p-1 px-3 text-lg font-light text-white hover:bg-green-500 disabled:bg-green-400"
@@ -446,7 +355,7 @@ const ProtocoloCreate = () => {
               </button>
             )}
             <button
-              title="Salvar e imprimir o protocolo."
+              title="Salvar e imprimir o capa."
               value="PRINT"
               disabled={isLoading}
               className="flex flex-1 items-center justify-between gap-2 rounded-[10px] bg-blue-600 p-1 px-3 text-lg font-light text-white hover:bg-blue-500 disabled:bg-blue-400"
@@ -483,11 +392,17 @@ export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
       props: {},
     };
   } else {
+    const assuntos = await prisma.capa.findMany({
+      where: { deleted_at: null },
+    });
+
     return {
-      props: {},
+      props: {
+        assuntos,
+      },
     };
   }
 };
 
-ProtocoloCreate.layout = "dashboard";
-export default ProtocoloCreate;
+CapaCreate.layout = "dashboard";
+export default CapaCreate;

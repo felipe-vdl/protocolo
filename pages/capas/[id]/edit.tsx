@@ -1,4 +1,4 @@
-import { Protocolo, User } from "@prisma/client";
+import { Capa, User } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { GetServerSideProps } from "next";
 import { authOptions } from "../../api/auth/[...nextauth]";
@@ -10,21 +10,21 @@ import Head from "next/head";
 import InputMask from "react-input-mask";
 import z from "zod";
 
-interface EditProtocoloProps {
-  protocolo: Protocolo & {
+interface EditCapaProps {
+  capa: Capa & {
     creator: User;
     editor?: User;
   };
 }
 
-interface UpdateProtocoloResponse {
+interface UpdateCapaResponse {
   message: string;
-  updatedProtocolo?: Protocolo & {
+  updatedCapa?: Capa & {
     user: User;
   };
 }
 
-const editProtocoloFormSchema = z.object({
+const editCapaFormSchema = z.object({
   num_inscricao: z.string().optional(),
   assunto: z.string(),
   anos_analise: z.string().optional(),
@@ -52,39 +52,39 @@ const editProtocoloFormSchema = z.object({
   enviar_whatsapp: z.boolean(),
 });
 
-const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
+const EditCapa = ({ capa }: EditCapaProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const notificationInitialState: AppNotification = { message: "", type: "" };
   const [notification, setNotification] = useState<AppNotification>(
     notificationInitialState
   );
 
-  const [isCPF, setIsCpf] = useState<boolean>(!!protocolo.cpf);
+  const [isCPF, setIsCpf] = useState<boolean>(!!capa.cpf);
 
   const formInitialState = {
-    ddd: protocolo.telefone.slice(2, 4),
-    num_inscricao: protocolo.num_inscricao,
-    assunto: protocolo.assunto,
-    anos_analise: protocolo.anos_analise,
-    nome: protocolo.nome,
-    cpf: protocolo.cpf,
-    cnpj: protocolo.cnpj,
-    telefone: protocolo.telefone.slice(4),
-    enviar_whatsapp: protocolo.enviar_whatsapp,
+    ddd: capa.telefone.slice(2, 4),
+    num_inscricao: capa.num_inscricao,
+    assunto: capa.assunto,
+    anos_analise: capa.anos_analise,
+    nome: capa.nome,
+    cpf: capa.cpf,
+    cnpj: capa.cnpj,
+    telefone: capa.telefone.slice(4),
+    enviar_whatsapp: capa.enviar_whatsapp,
   };
   const [form, setForm] =
-    useState<z.infer<typeof editProtocoloFormSchema>>(formInitialState);
+    useState<z.infer<typeof editCapaFormSchema>>(formInitialState);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     try {
-      const result = editProtocoloFormSchema.safeParse(form);
+      const result = editCapaFormSchema.safeParse(form);
       if (result.success) {
         const submitter = document.activeElement as HTMLButtonElement;
         setNotification(notificationInitialState);
         setIsLoading(true);
 
-        const response = await fetch(`/api/protocolos/${protocolo.id}/update`, {
+        const response = await fetch(`/api/capas/${capa.id}/update`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -108,23 +108,19 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
           throw new Error(error.message);
         }
 
-        const { message, updatedProtocolo }: UpdateProtocoloResponse =
+        const { message, updatedCapa }: UpdateCapaResponse =
           await response.json();
         setNotification({ type: "success", message });
         setForm({
-          anos_analise: updatedProtocolo.anos_analise,
-          assunto: updatedProtocolo.assunto,
-          cnpj: updatedProtocolo.cnpj,
-          cpf: updatedProtocolo.cpf,
-          ddd: updatedProtocolo.telefone
-            ? updatedProtocolo.telefone.slice(2, 4)
-            : "",
-          telefone: updatedProtocolo.telefone
-            ? updatedProtocolo.telefone.slice(4)
-            : "",
-          enviar_whatsapp: updatedProtocolo.enviar_whatsapp,
-          nome: updatedProtocolo.nome,
-          num_inscricao: updatedProtocolo.num_inscricao,
+          anos_analise: updatedCapa.anos_analise,
+          assunto: updatedCapa.assunto,
+          cnpj: updatedCapa.cnpj,
+          cpf: updatedCapa.cpf,
+          ddd: updatedCapa.telefone ? updatedCapa.telefone.slice(2, 4) : "",
+          telefone: updatedCapa.telefone ? updatedCapa.telefone.slice(4) : "",
+          enviar_whatsapp: updatedCapa.enviar_whatsapp,
+          nome: updatedCapa.nome,
+          num_inscricao: updatedCapa.num_inscricao,
         });
         setIsLoading(false);
 
@@ -138,43 +134,43 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
                 <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
                 <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
                 ${
-                  protocolo.num_inscricao
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${protocolo.num_inscricao}</span></p>`
+                  capa.num_inscricao
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${capa.num_inscricao}</span></p>`
                     : ""
                 }
                 <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.processo
+                  capa.processo
                 }</span></p>
                 <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
-                  protocolo.created_at
+                  capa.created_at
                 ).toLocaleDateString("pt-br")}</span></p>
                 <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.assunto
+                  capa.assunto
                 }</span></p>
                 ${
-                  protocolo.anos_analise
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${protocolo.anos_analise}</span></p>`
+                  capa.anos_analise
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${capa.anos_analise}</span></p>`
                     : ""
                 }
                 <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
-                  protocolo.nome
+                  capa.nome
                 }</span></p>
                 ${
-                  protocolo.cpf
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${protocolo.cpf}</span></p>`
+                  capa.cpf
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${capa.cpf}</span></p>`
                     : ""
                 }
                 ${
-                  protocolo.cnpj
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${protocolo.cnpj}</span></p>`
+                  capa.cnpj
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${capa.cnpj}</span></p>`
                     : ""
                 }
                 ${
-                  protocolo.telefone
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${protocolo.telefone}</span></p>`
+                  capa.telefone
+                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${capa.telefone}</span></p>`
                     : ""
                 }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${protocolo.creator.name
+                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${capa.creator.name
                   .split(" ")[0]
                   .toUpperCase()}</span></p>
                 <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
@@ -238,11 +234,11 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
   return (
     <>
       <Head>
-        <title>Editar Protocolo</title>
+        <title>Editar Capa</title>
       </Head>
       <div className="m-auto flex w-full flex-col items-center rounded-[12px] bg-light-500 text-light-50 shadow shadow-black/20 dark:bg-dark-500 dark:text-dark-50 sm:w-[25rem] md:w-[30rem] lg:w-[38rem]">
         <div className="w-full rounded-t-[12px] bg-dourado py-1 text-center">
-          <h2 className="text-2xl font-light text-white">Editar Protocolo</h2>
+          <h2 className="text-2xl font-light text-white">Editar Capa</h2>
         </div>
         <form
           className="flex w-full flex-col gap-8 p-4 pt-8"
@@ -428,7 +424,7 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
           </div>
           <div className="flex gap-8">
             <button
-              title="Salvar o protocolo sem imprimir."
+              title="Salvar o capa sem imprimir."
               value="SAVE"
               disabled={isLoading}
               className="flex flex-1 items-center justify-between gap-2 rounded-[10px] bg-green-600 p-1 px-3 text-lg font-light text-white hover:bg-green-500 disabled:bg-green-400"
@@ -447,7 +443,7 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
               <span></span>
             </button>
             <button
-              title="Salvar e imprimir o protocolo."
+              title="Salvar e imprimir o capa."
               value="PRINT"
               disabled={isLoading}
               className="flex flex-1 items-center justify-between gap-2 rounded-[10px] bg-blue-600 p-1 px-3 text-lg font-light text-white hover:bg-blue-500 disabled:bg-blue-400"
@@ -472,9 +468,9 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<
-  EditProtocoloProps
-> = async (context) => {
+export const getServerSideProps: GetServerSideProps<EditCapaProps> = async (
+  context
+) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (!session) {
@@ -498,7 +494,7 @@ export const getServerSideProps: GetServerSideProps<
   } */
 
   const id = +context.params.id;
-  const protocolo = await prisma.protocolo.findFirst({
+  const capa = await prisma.capa.findFirst({
     where: { id },
     include: {
       creator: true,
@@ -506,9 +502,9 @@ export const getServerSideProps: GetServerSideProps<
     },
   });
 
-  if (!protocolo) {
+  if (!capa) {
     const queryParams =
-      "?notificationMessage=O%20protocolo%20n%C3%A3o%20foi%20encontrado.&notificationType=error";
+      "?notificationMessage=O%20capa%20n%C3%A3o%20foi%20encontrado.&notificationType=error";
 
     return {
       redirect: {
@@ -521,10 +517,10 @@ export const getServerSideProps: GetServerSideProps<
 
   return {
     props: {
-      protocolo,
+      capa,
     },
   };
 };
 
-EditProtocolo.layout = "dashboard";
-export default EditProtocolo;
+EditCapa.layout = "dashboard";
+export default EditCapa;
