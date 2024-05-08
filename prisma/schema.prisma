@@ -22,6 +22,11 @@ model User {
 
   created_protocolos   Protocolo[] @relation("creator")
   edited_protocolos   Protocolo[] @relation("editor")
+  created_capas   Capa[] @relation("creator")
+  edited_capas   Capa[] @relation("editor")
+  created_assuntos   Assunto[] @relation("creator")
+  edited_assuntos   Assunto[] @relation("editor")
+
   @@map("users")
 }
 enum Role {
@@ -59,4 +64,43 @@ model Protocolo {
   editor_id          Int?
 
   @@map("protocolos")
+}
+
+model Capa {
+  id Int @id @default(autoincrement())
+
+  num_protocolo    String   @db.Text
+  distribuicao     DateTime
+  volume           String?  @db.Text
+  requerente       String   @db.Text
+  assunto          String   @db.Text
+  observacao       String?  @db.Text
+
+  created_at       DateTime  @default(now())
+  updated_at       DateTime? @updatedAt
+  deleted_at       DateTime?
+
+  creator            User @relation(name: "creator", fields: [creator_id], references: [id])
+  creator_id          Int
+
+  editor             User? @relation(name: "editor", fields: [editor_id], references: [id])
+  editor_id          Int?
+
+  @@map("capas")
+}
+
+model Assunto {
+  id             Int    @id @default(autoincrement())
+  name           String @db.Text
+
+  created_at     DateTime  @default(now())
+  updated_at     DateTime? @updatedAt
+  deleted_at     DateTime?
+
+  creator        User @relation(name: "creator", fields: [creator_id], references: [id])
+  creator_id     Int
+  editor         User? @relation(name: "editor", fields: [editor_id], references: [id])
+  editor_id      Int?
+
+  @@map("assuntos")
 }
