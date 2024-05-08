@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  server:
+    build: ./
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=mysql://user:password@database_address:3306/protocolo?schema=public
+      - NEXTAUTH_URL=http://localhost:3000 
+      - NEXTAUTH_SECRET=secret # Generate with 'openssl rand -base64 32'
+      - DEFAULT_PASSWORD=admin
+      - WHATSAPP_API_URL=https://example.com
+      - WHATSAPP_API_KEY=secret
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - 'mysql'
+
+  mysql:
+    image: 'mysql/mysql-server:8.0'
+    ports:
+        - '3306:3306'
+    environment:
+        MYSQL_ROOT_PASSWORD: 'admin'
+        MYSQL_ROOT_HOST: '%'
+        MYSQL_DATABASE: 'protocolo'
+        MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+        - 'mysql_db:/var/lib/mysql'
+
+volumes:
+  mysql_db:
