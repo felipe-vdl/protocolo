@@ -30,9 +30,10 @@ export default async function NewCapa(
 
     const {
       num_protocolo,
-      distribuicao_date,
+      distribuicao,
       requerente,
       assunto,
+      outro_assunto,
       volume,
       observacao,
     } = req.body;
@@ -45,8 +46,11 @@ export default async function NewCapa(
       },
       data: {
         num_protocolo: String(num_protocolo).toUpperCase(),
-        distribuicao: `${distribuicao_date} 00:00:01`,
-        assunto: String(assunto).toUpperCase(),
+        distribuicao: new Date(`${distribuicao} 00:00:00`),
+        assunto:
+          assunto === "Outro"
+            ? String(outro_assunto).toUpperCase()
+            : String(assunto).toUpperCase(),
         requerente: String(requerente).toUpperCase(),
         observacao: observacao ? String(observacao).toUpperCase() : "",
         volume: volume ? String(volume).toUpperCase() : "",

@@ -1,4 +1,4 @@
-import { Capa, User } from "@prisma/client";
+import { Assunto, Capa, User } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { GetServerSideProps } from "next";
 import { authOptions } from "../../api/auth/[...nextauth]";
@@ -12,65 +12,53 @@ import z from "zod";
 
 interface EditCapaProps {
   capa: Capa & {
-    creator: User;
-    editor?: User;
+    creator: Pick<User, "id" | "name">;
+    editor?: Pick<User, "id" | "name">;
   };
+  assuntos: Assunto[];
 }
 
 interface UpdateCapaResponse {
   message: string;
   updatedCapa?: Capa & {
-    user: User;
+    user: Pick<User, "id" | "name">;
   };
 }
 
-const editCapaFormSchema = z.object({
-  num_inscricao: z.string().optional(),
-  assunto: z.string(),
-  anos_analise: z.string().optional(),
-  nome: z.string().min(1, "Informe um nome."),
-  cpf: z.union([
-    z.string().length(0, "CPF Inválido"),
-    z.string().min(14, "CPF Inválido"),
-  ]),
-  cnpj: z.union([
-    z.string().length(0, "CNPJ Inválido"),
-    z.string().min(18, "CNPJ Inválido"),
-  ]),
-  ddd: z
-    .union([
-      z.string().length(0, "DDD Inválido"),
-      z.string().length(2, "DDD Inválido"),
-    ])
-    .optional(),
-  telefone: z
-    .union([
-      z.string().length(0, "Telefone Inválido"),
-      z.string().min(9, "Telefone Inválido"),
-    ])
-    .optional(),
-  enviar_whatsapp: z.boolean(),
-});
+const editCapaFormSchema = z
+  .object({
+    num_protocolo: z.string(),
+    distribuicao: z.string(),
+    volume: z.string().optional(),
+    requerente: z.string(),
+    assunto: z.string(),
+    outro_assunto: z.string(),
+    observacao: z.string().optional(),
+  })
+  .refine(
+    (data) => data.assunto === "Outro" && data.outro_assunto.trim().length > 0,
+    { message: "É necessário descrever o assunto." }
+  );
 
-const EditCapa = ({ capa }: EditCapaProps) => {
+const EditCapa = ({ capa, assuntos }: EditCapaProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const notificationInitialState: AppNotification = { message: "", type: "" };
   const [notification, setNotification] = useState<AppNotification>(
     notificationInitialState
   );
 
-  const [isCPF, setIsCpf] = useState<boolean>(!!capa.cpf);
-
   const formInitialState = {
-    ddd: capa.telefone.slice(2, 4),
-    num_inscricao: capa.num_inscricao,
-    assunto: capa.assunto,
-    anos_analise: capa.anos_analise,
-    nome: capa.nome,
-    cpf: capa.cpf,
-    cnpj: capa.cnpj,
-    telefone: capa.telefone.slice(4),
-    enviar_whatsapp: capa.enviar_whatsapp,
+    requerente: capa.requerente,
+    num_protocolo: capa.num_protocolo,
+    distribuicao: capa.distribuicao.toISOString().split("T")[0],
+    volume: capa.volume,
+    assunto: assuntos.some((assunto) => assunto.name === capa.assunto)
+      ? capa.assunto
+      : "Outro",
+    outro_assunto: !assuntos.some((assunto) => assunto.name === capa.assunto)
+      ? capa.assunto
+      : "",
+    observacao: capa.observacao,
   };
   const [form, setForm] =
     useState<z.infer<typeof editCapaFormSchema>>(formInitialState);
@@ -89,18 +77,7 @@ const EditCapa = ({ capa }: EditCapaProps) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            ...result.data,
-            // tipo CNPJ
-            cnpj: !isCPF ? result.data.cnpj : "",
-            // tipo CPF
-            cpf: isCPF ? result.data.cpf : "",
-            telefone:
-              result.data.telefone.length > 0 && isCPF
-                ? `55${result.data.ddd}${result.data.telefone}`
-                : "",
-            enviar_whatsapp: isCPF ? result.data.enviar_whatsapp : false,
-          }),
+          body: JSON.stringify(result.data),
         });
 
         if (!response.ok) {
@@ -110,82 +87,31 @@ const EditCapa = ({ capa }: EditCapaProps) => {
 
         const { message, updatedCapa }: UpdateCapaResponse =
           await response.json();
+
         setNotification({ type: "success", message });
         setForm({
-          anos_analise: updatedCapa.anos_analise,
-          assunto: updatedCapa.assunto,
-          cnpj: updatedCapa.cnpj,
-          cpf: updatedCapa.cpf,
-          ddd: updatedCapa.telefone ? updatedCapa.telefone.slice(2, 4) : "",
-          telefone: updatedCapa.telefone ? updatedCapa.telefone.slice(4) : "",
-          enviar_whatsapp: updatedCapa.enviar_whatsapp,
-          nome: updatedCapa.nome,
-          num_inscricao: updatedCapa.num_inscricao,
+          requerente: updatedCapa.requerente,
+          num_protocolo: updatedCapa.num_protocolo,
+          distribuicao: new Date(updatedCapa.distribuicao)
+            .toISOString()
+            .split("T")[0],
+          volume: updatedCapa.volume,
+          assunto: assuntos.some(
+            (assunto) => assunto.name === updatedCapa.assunto
+          )
+            ? updatedCapa.assunto
+            : "Outro",
+          outro_assunto: !assuntos.some(
+            (assunto) => assunto.name === updatedCapa.assunto
+          )
+            ? updatedCapa.assunto
+            : "",
+          observacao: updatedCapa.observacao,
         });
         setIsLoading(false);
 
         if (submitter.value === "PRINT") {
-          let win = window.open();
-          win.document.write(`
-            <html>
-              <head><title>Senha</title></head>
-              <body style="margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-start; font-family: Arial, Helvetica, sans-serif;">
-                <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
-                <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
-                <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
-                ${
-                  capa.num_inscricao
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${capa.num_inscricao}</span></p>`
-                    : ""
-                }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
-                  capa.processo
-                }</span></p>
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
-                  capa.created_at
-                ).toLocaleDateString("pt-br")}</span></p>
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
-                  capa.assunto
-                }</span></p>
-                ${
-                  capa.anos_analise
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${capa.anos_analise}</span></p>`
-                    : ""
-                }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
-                  capa.nome
-                }</span></p>
-                ${
-                  capa.cpf
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${capa.cpf}</span></p>`
-                    : ""
-                }
-                ${
-                  capa.cnpj
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${capa.cnpj}</span></p>`
-                    : ""
-                }
-                ${
-                  capa.telefone
-                    ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${capa.telefone}</span></p>`
-                    : ""
-                }
-                <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${capa.creator.name
-                  .split(" ")[0]
-                  .toUpperCase()}</span></p>
-                <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
-                <script>
-                  const img = new Image();
-                  img.src = "/logo-mesquita192.png";
-                  document.querySelector("img").src = img.src;
-                  img.onload = () => {
-                    window.print();
-                    window.close();
-                  };
-                </script>
-              </body>
-            </html>
-          `);
+          // print capa
         }
       }
     } catch (error) {
@@ -197,38 +123,10 @@ const EditCapa = ({ capa }: EditCapaProps) => {
     }
   };
 
-  const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
-  };
-
-  const handleDDDChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
-    if (evt.target.value.length === 2)
-      document.getElementById("telefone").focus();
-  };
-
-  const handleTelefoneChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
-    if (evt.target.value.length === 0) document.getElementById("ddd").focus();
-  };
-
-  const handleTelefoneKeyboard = (
-    evt: React.KeyboardEvent<HTMLInputElement> & { target: { value: string } }
+  const handleChange = (
+    evt: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    if (evt.key === "Backspace" && evt.target.value.length === 0)
-      document.getElementById("ddd").focus();
-  };
-
-  const handleToggle = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((st) => ({ ...st, [evt.target.name]: !st[evt.target.name] }));
-  };
-
-  const handleRadioChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    if (evt.target.value === "cpf") {
-      setIsCpf(true);
-    } else {
-      setIsCpf(false);
-    }
+    setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
   };
 
   return (
@@ -264,167 +162,110 @@ const EditCapa = ({ capa }: EditCapaProps) => {
           <div className="flex flex-col gap-12">
             <div className="flex flex-col gap-6 px-1">
               <div className="flex flex-col">
-                <label htmlFor="num_inscricao">N° de Inscrição:</label>
+                <label htmlFor="num_protocolo">N° do Protocolo: *</label>
                 <input
+                  id="num_protocolo"
                   type="text"
                   onChange={handleChange}
-                  name="num_inscricao"
-                  value={form.num_inscricao}
+                  value={form.num_protocolo}
+                  name="num_protocolo"
                   className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  placeholder="Digite o número (opcional)"
+                  placeholder="11/111/11"
+                  required={true}
                 />
               </div>
               <div className="flex flex-col">
-                <label htmlFor="assunto">Assunto:</label>
+                <label htmlFor="distribuicao">Distribuição: *</label>
                 <input
-                  id="assunto"
+                  id="distribuicao"
+                  type="date"
+                  value={form.distribuicao}
+                  onChange={handleChange}
+                  name="distribuicao"
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Data de distribuição"
+                  required={true}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="volume">Volume:</label>
+                <input
+                  id="volume"
                   type="text"
+                  onChange={handleChange}
+                  name="volume"
+                  value={form.volume}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Campo Opcional"
+                  required={false}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="requerente">Requerente: *</label>
+                <input
+                  id="requerente"
+                  type="text"
+                  onChange={handleChange}
+                  name="requerente"
+                  value={form.requerente}
+                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                  placeholder="Arthur de Oliveira"
+                  required={true}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="assunto">Assunto: *</label>
+                <select
+                  id="assunto"
                   onChange={handleChange}
                   name="assunto"
                   value={form.assunto}
                   className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  placeholder="Descreva o assunto"
+                  placeholder="Selecione o Assunto"
                   required={true}
-                />
+                >
+                  <option value="">Selecione o Assunto</option>
+                  {assuntos.map((assunto) => (
+                    <option value={assunto.name} key={assunto.name}>
+                      {assunto.name}
+                    </option>
+                  ))}
+                  <option value="Outro">Outro</option>
+                </select>
               </div>
+              {form.assunto === "Outro" && (
+                <div className="flex flex-col">
+                  <label htmlFor="assunto">Descreva o Assunto: *</label>
+                  <input
+                    id="outro_assunto"
+                    type="text"
+                    onChange={handleChange}
+                    name="outro_assunto"
+                    value={form.outro_assunto}
+                    className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                    placeholder="Descreva o assunto."
+                    required={true}
+                  />
+                </div>
+              )}
               <div className="flex flex-col">
-                <label htmlFor="anos_analise">Anos p/ Análise:</label>
+                <label htmlFor="observacao">Observação:</label>
                 <input
-                  id="anos_analise"
+                  id="observacao"
                   type="text"
                   onChange={handleChange}
-                  name="anos_analise"
-                  value={form.anos_analise}
+                  name="observacao"
+                  value={form.observacao}
                   className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  placeholder="Campo opcional"
+                  placeholder="Campo Opcional"
                   required={false}
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-6 px-1">
-              <div className="flex w-full items-center">
-                <div className="flex flex-1 items-center justify-center gap-2">
-                  <input
-                    onChange={handleRadioChange}
-                    type="radio"
-                    id="cpf"
-                    name="tipo"
-                    value="cpf"
-                    checked={isCPF}
-                  />
-                  <label htmlFor="cpf">CPF</label>
-                </div>
-                <div className="flex flex-1 items-center justify-center gap-2">
-                  <input
-                    onChange={handleRadioChange}
-                    type="radio"
-                    id="cnpj"
-                    name="tipo"
-                    value="cnpj"
-                    checked={!isCPF}
-                  />
-                  <label htmlFor="cnpj">CNPJ</label>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="nome">
-                  {isCPF ? "Nome:" : "Razão Social:"}
-                </label>
-                <input
-                  id="nome"
-                  type="text"
-                  onChange={handleChange}
-                  name="nome"
-                  value={form.nome}
-                  className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  placeholder={isCPF ? "Nome Completo" : "Razão Social"}
-                  required={true}
-                />
-              </div>
-              {isCPF ? (
-                <>
-                  <div className="flex flex-col">
-                    <label htmlFor="cpf">CPF:</label>
-                    <InputMask
-                      id="cpf"
-                      required
-                      className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                      mask="999.999.999-99"
-                      maskChar={null}
-                      placeholder="111.111.111-11"
-                      value={form.cpf}
-                      name="cpf"
-                      minLength={14}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label htmlFor="ddd">Telefone Celular:</label>
-                    <div className="flex">
-                      <InputMask
-                        id="ddd"
-                        value={form.ddd}
-                        onChange={handleDDDChange}
-                        name="ddd"
-                        placeholder="DDD"
-                        maskChar={null}
-                        mask="99"
-                        max={2}
-                        required={form.telefone.length > 0}
-                        className="w-[4rem] border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                      />
-                      <InputMask
-                        id="telefone"
-                        required={form.telefone.length > 0}
-                        minLength={14}
-                        maskChar={null}
-                        className="flex-1 border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                        placeholder="Telefone Celular (WhatsApp)"
-                        mask="9999-99999"
-                        value={form.telefone}
-                        name="telefone"
-                        onChange={handleTelefoneChange}
-                        onKeyDown={handleTelefoneKeyboard}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      value="1"
-                      id="enviar_whatsapp"
-                      name="enviar_whatsapp"
-                      onChange={handleToggle}
-                      checked={form.enviar_whatsapp}
-                      className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 dark:border-gray-600 dark:bg-gray-700"
-                    />
-                    <label htmlFor="enviar_whatsapp">
-                      Enviar notificação por WhatsApp
-                    </label>
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-col">
-                  <label htmlFor="cnpj">CNPJ:</label>
-                  <InputMask
-                    id="cnpj"
-                    required
-                    className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                    mask="99.999.999/9999-99"
-                    maskChar={null}
-                    placeholder="11.111.111/1111-11"
-                    value={form.cnpj}
-                    name="cnpj"
-                    minLength={18}
-                    onChange={handleChange}
-                  />
-                </div>
-              )}
-            </div>
           </div>
           <div className="flex gap-8">
             <button
-              title="Salvar o capa sem imprimir."
+              title="Salvar a capa sem imprimir."
               value="SAVE"
               disabled={isLoading}
               className="flex flex-1 items-center justify-between gap-2 rounded-[10px] bg-green-600 p-1 px-3 text-lg font-light text-white hover:bg-green-500 disabled:bg-green-400"
@@ -443,7 +284,7 @@ const EditCapa = ({ capa }: EditCapaProps) => {
               <span></span>
             </button>
             <button
-              title="Salvar e imprimir o capa."
+              title="Salvar e imprimir a capa."
               value="PRINT"
               disabled={isLoading}
               className="flex flex-1 items-center justify-between gap-2 rounded-[10px] bg-blue-600 p-1 px-3 text-lg font-light text-white hover:bg-blue-500 disabled:bg-blue-400"
@@ -515,8 +356,13 @@ export const getServerSideProps: GetServerSideProps<EditCapaProps> = async (
     };
   }
 
+  const assuntos = await prisma.assunto.findMany({
+    where: { deleted_at: null },
+  });
+
   return {
     props: {
+      assuntos,
       capa,
     },
   };
