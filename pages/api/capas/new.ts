@@ -7,8 +7,8 @@ import { Capa, User } from "@prisma/client";
 interface NewProtocoloResponse {
   message: string;
   capa?: Capa & {
-    creator: User;
-    editor?: User;
+    creator: Pick<User, "id" | "name">;
+    editor?: Pick<User, "id" | "name">;
   };
 }
 
@@ -27,9 +27,10 @@ export default async function NewProtocolo(
     if (session) {
       const {
         num_protocolo,
-        distribuicao_date,
+        distribuicao,
         requerente,
         assunto,
+        outro_assunto,
         volume,
         observacao,
       } = req.body;
@@ -37,8 +38,11 @@ export default async function NewProtocolo(
       const capa = await prisma.capa.create({
         data: {
           num_protocolo: String(num_protocolo).toUpperCase(),
-          distribuicao: `${distribuicao_date} 00:00:01`,
-          assunto: String(assunto).toUpperCase(),
+          distribuicao: new Date(`${distribuicao} 00:00:00`),
+          assunto:
+            assunto === "Outro"
+              ? String(outro_assunto).toUpperCase()
+              : String(assunto).toUpperCase(),
           requerente: String(requerente).toUpperCase(),
           observacao: observacao ? String(observacao).toUpperCase() : "",
           volume: volume ? String(volume).toUpperCase() : "",
@@ -47,7 +51,12 @@ export default async function NewProtocolo(
           },
         },
         include: {
-          creator: true,
+          creator: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       });
 

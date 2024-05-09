@@ -19,6 +19,7 @@ export default function Navbar() {
       <div className="w-full max-w-[1440px] flex items-center justify-between mx-auto">
         <Link href="/">
           <Image
+            priority
             src={logoProtocolo}
             height={70}
             alt="Mesquita SGP"

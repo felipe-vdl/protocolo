@@ -8,8 +8,8 @@ import { sendWhatsApp } from "./send-whatsapp";
 interface NewProtocoloResponse {
   message: string;
   protocolo?: Protocolo & {
-    creator: User;
-    editor?: User;
+    creator: Pick<User, "id" | "name">;
+    editor?: Pick<User, "id" | "name">;
   };
 }
 
@@ -57,7 +57,7 @@ export default async function NewProtocolo(
           num_processo = 1;
         } else {
           // If we're still in the same year, increment the counter.
-          num_processo = lastProtocolo[0].num_processo+1;
+          num_processo = lastProtocolo[0].num_processo + 1;
         }
       } else {
         // First register.
@@ -80,10 +80,15 @@ export default async function NewProtocolo(
           enviar_whatsapp: enviar_whatsapp && telefone ? true : false,
           creator: {
             connect: { id: +session.user.id },
-          }
+          },
         },
         include: {
-          creator: true,
+          creator: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       });
 

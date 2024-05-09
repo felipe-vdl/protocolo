@@ -7,8 +7,8 @@ import { Capa, User } from "@prisma/client";
 interface UpdateCapaResponse {
   message: string;
   updatedCapa?: Capa & {
-    creator: User;
-    editor?: User;
+    creator: Pick<User, "id" | "name">;
+    editor?: Pick<User, "id" | "name">;
   };
 }
 
@@ -55,7 +55,12 @@ export default async function NewCapa(
         },
       },
       include: {
-        creator: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

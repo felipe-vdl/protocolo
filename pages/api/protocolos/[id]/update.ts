@@ -8,8 +8,8 @@ import { sendWhatsApp } from "../send-whatsapp";
 interface UpdateProtocoloResponse {
   message: string;
   updatedProtocolo?: Protocolo & {
-    creator: User;
-    editor?: User;
+    creator: Pick<User, "id" | "name">;
+    editor?: Pick<User, "id" | "name">;
   };
 }
 
@@ -28,7 +28,7 @@ export default async function NewProtocolo(
     if (!session) {
       return res.status(401).json({ message: "Usuário não está autenticado." });
     }
-    
+
     /* if (session.user.role !== "SUPERADMIN") {
       return res.status(403).json({ message: "Permissão negada." });
     } */
@@ -48,7 +48,7 @@ export default async function NewProtocolo(
 
     const updatedProtocolo = await prisma.protocolo.update({
       where: {
-        id
+        id,
       },
       data: {
         num_inscricao: String(num_inscricao).toUpperCase(),
@@ -60,11 +60,16 @@ export default async function NewProtocolo(
         telefone: String(telefone),
         enviar_whatsapp: enviar_whatsapp && telefone ? true : false,
         editor: {
-          connect: { id: +session.user.id }
-        }
+          connect: { id: +session.user.id },
+        },
       },
       include: {
-        creator: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

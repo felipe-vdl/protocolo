@@ -51,95 +51,8 @@ const RowActions = ({ capa }: RowActionsProps) => {
     });
   };
 
-  const handleSendWhatsApp = async () => {
-    try {
-      setDialog(dialogInitialState);
-      const response = await fetch("/api/capas/send-whatsapp", {
-        method: "POST",
-        body: JSON.stringify({
-          id: capa.id,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message);
-      }
-
-      const data = await response.json();
-      Router.replace(Router.asPath);
-      setNotification({ type: "success", message: data.message });
-    } catch (error) {
-      setNotification({ type: "error", message: error.message });
-      setDialog(dialogInitialState);
-    }
-  };
-
   const handlePrint = () => {
-    let win = window.open();
-    win.document.write(`
-      <html>
-        <head><title>Senha</title></head>
-        <body style="margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-start; font-family: Arial, Helvetica, sans-serif;">
-          <p style="margin: 0; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PREFEITURA DE MESQUITA</p>
-          <img src="" alt="Logo" width="80" height="80" style="align-self: center; margin: 0.5rem 0;">
-          <p style="margin: 0.25rem; text-align: start; font-size: 16px; font-weight: bold; align-self:center;">PROTOCOLO</p>
-          ${
-            capa.num_inscricao
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE INSCRIÇÃO:</b> <span style="border-bottom: 1px solid black;">${capa.num_inscricao}</span></p>`
-              : ""
-          }
-          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>N° DE PROCESSO:</b> <span style="border-bottom: 1px solid black;">${
-            capa.processo
-          }</span></p>
-          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>DATA:</b> <span style="border-bottom: 1px solid black;">${new Date(
-            capa.created_at
-          ).toLocaleDateString("pt-br")}</span></p>
-          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ASSUNTO:</b> <span style="border-bottom: 1px solid black;">${
-            capa.assunto
-          }</span></p>
-          ${
-            capa.anos_analise
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>ANOS P/ ANÁLISE:</b> <span style="border-bottom: 1px solid black;">${capa.anos_analise}</span></p>`
-              : ""
-          }
-          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>NOME:</b> <span style="border-bottom: 1px solid black;">${
-            capa.nome
-          }</span></p>
-          ${
-            capa.cpf
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CPF:</b> <span style="border-bottom: 1px solid black;">${capa.cpf}</span></p>`
-              : ""
-          }
-          ${
-            capa.cnpj
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>CNPJ:</b> <span style="border-bottom: 1px solid black;">${capa.cnpj}</span></p>`
-              : ""
-          }
-          ${
-            capa.telefone
-              ? `<p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>TELEFONE:</b> <span style="border-bottom: 1px solid black;">${capa.telefone}</span></p>`
-              : ""
-          }
-          <p style="margin: 0.25rem; text-align: start; font-size: 12px;"><b>PROTOCOLISTA:</b> <span style="border-bottom: 1px solid black;">${capa.creator.name
-            .split(" ")[0]
-            .toUpperCase()}</span></p>
-          <p style="margin: 0.5rem 0.25rem; text-align: start; font-size: 10px; font-weight: bold;">A PARTE SÓ SERÁ ATENTIDA SOB APRESENTAÇÃO DESTE, OU UMA CÓPIA DO MESMO (XEROX).</p>
-          <script>
-            const img = new Image();
-            img.src = "/logo-mesquita192.png";
-            document.querySelector("img").src = img.src;
-            img.onload = () => {
-              window.print();
-              window.close();
-            };
-          </script>
-        </body>
-      </html>
-    `);
+    // print capa
   };
 
   const handleDeactivate = async () => {
@@ -181,32 +94,10 @@ const RowActions = ({ capa }: RowActionsProps) => {
           <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
         </svg>
       </button>
-      {capa.telefone && (
-        <button
-          className="ratio-square rounded bg-green-600 p-2 text-white transition-colors hover:bg-green-700"
-          title="Notificar por WhatsApp."
-          onClick={() =>
-            handleConfirmation(
-              handleSendWhatsApp,
-              "Você está prestes a enviar uma notificação por WhatsApp."
-            )
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            viewBox="0 0 16 16"
-          >
-            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
-          </svg>
-        </button>
-      )}
       <Link
         href={`/capas/${capa.id}/edit`}
         className="ratio-square rounded bg-yellow-500 p-2 text-white transition-colors hover:bg-yellow-700"
-        title={`Editar informações do capa.`}
+        title={`Editar informações da capa.`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -223,11 +114,11 @@ const RowActions = ({ capa }: RowActionsProps) => {
           {!capa.deleted_at ? (
             <button
               className="ratio-square rounded bg-red-500 p-2 text-white transition-colors hover:bg-red-700"
-              title={`Arquivar o capa.`}
+              title={`Arquivar a capa.`}
               onClick={() =>
                 handleConfirmation(
                   handleDeactivate,
-                  "Você está prestes a arquivar o capa."
+                  "Você está prestes a arquivar a capa."
                 )
               }
             >
@@ -251,11 +142,11 @@ const RowActions = ({ capa }: RowActionsProps) => {
           ) : (
             <button
               className="ratio-square rounded bg-green-500 p-2 text-white transition-colors hover:bg-green-700"
-              title={`Desarquivar o capa.`}
+              title={`Desarquivar a capa.`}
               onClick={() =>
                 handleConfirmation(
                   handleDeactivate,
-                  "Você está prestes a desarquivar o capa."
+                  "Você está prestes a desarquivar a capa."
                 )
               }
             >
@@ -298,19 +189,41 @@ const CapaIndex = ({ capas }: CapaIndexProps) => {
     Capa & { creator: User; editor?: User }
   >();
   const columns = [
-    columnHelper.accessor("num_inscricao", {
-      header: "N° de Inscrição",
+    columnHelper.accessor("num_protocolo", {
+      header: "N° do Protocolo",
       cell: (info) => info.getValue(),
-      sortingFn: "basic",
-      filterFn: "numToString",
+      sortingFn: "alphanumeric",
+      filterFn: "includesString",
       size: 92,
     }),
-    columnHelper.accessor("processo", {
-      header: "N° do Processo",
+    columnHelper.accessor(
+      (row) =>
+        row.distribuicao.toLocaleDateString("pt-br", {
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+        }),
+      {
+        id: "distribuicao",
+        header: "Distribuição",
+        cell: (info) => info.getValue().replace(",", "").split(" ")[0],
+        sortingFn: "stringDate",
+        sortDescFirst: true,
+        filterFn: "includesString",
+        size: 107,
+      }
+    ),
+    columnHelper.accessor("volume", {
+      header: "Volume",
       cell: (info) => info.getValue(),
-      sortingFn: "basic",
-      filterFn: "numToString",
-      size: 107,
+      sortingFn: "alphanumeric",
+      filterFn: "includesString",
+    }),
+    columnHelper.accessor("requerente", {
+      header: "Requerente",
+      cell: (info) => info.getValue(),
+      sortingFn: "alphanumeric",
+      filterFn: "includesString",
     }),
     columnHelper.accessor("assunto", {
       header: "Assunto",
@@ -318,39 +231,11 @@ const CapaIndex = ({ capas }: CapaIndexProps) => {
       sortingFn: "alphanumeric",
       filterFn: "includesString",
     }),
-    columnHelper.accessor("anos_analise", {
-      header: "Anos p/ Análise",
+    columnHelper.accessor("observacao", {
+      header: "Observação",
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
-      size: 101,
-    }),
-    columnHelper.accessor("nome", {
-      header: "Nome",
-      cell: (info) => info.getValue(),
-      sortingFn: "alphanumeric",
-      filterFn: "includesString",
-    }),
-    columnHelper.accessor((row) => `${row.cpf.length ? row.cpf : row.cnpj}`, {
-      header: "CPF/CNPJ",
-      cell: (info) => info.getValue(),
-      sortingFn: "alphanumeric",
-      filterFn: "includesString",
-      size: 125,
-    }),
-    // columnHelper.accessor("cpf", {
-    //   header: "CPF",
-    //   cell: (info) => info.getValue(),
-    //   sortingFn: "alphanumeric",
-    //   filterFn: "includesString",
-    //   size: 125,
-    // }),
-    columnHelper.accessor("telefone", {
-      header: "Telefone",
-      cell: (info) => info.getValue(),
-      sortingFn: "alphanumeric",
-      filterFn: "includesString",
-      size: 122,
     }),
     columnHelper.accessor(
       (row) =>
@@ -361,7 +246,7 @@ const CapaIndex = ({ capas }: CapaIndexProps) => {
         }),
       {
         id: "created_at",
-        header: "Data",
+        header: "Data de Criação",
         cell: (info) => info.getValue().replace(",", "").split(" ")[0],
         sortingFn: "stringDate",
         sortDescFirst: true,

@@ -5,11 +5,20 @@ import { prisma } from "../../../../db";
 
 import { NextApiRequest, NextApiResponse } from "next";
 import { Message } from "@/types/interfaces";
-import { Capa } from "@prisma/client";
+import { Capa, User } from "@prisma/client";
+
+type GetCapaByIDResponse =
+  | {
+      capa: Capa & {
+        creator: Pick<User, "id" | "name">;
+        editor: Pick<User, "id" | "name">;
+      };
+    }
+  | Message;
 
 export default async function getCapaByIdHandler(
   req: NextApiRequest,
-  res: NextApiResponse<{ capa: Capa } | Message>
+  res: NextApiResponse<GetCapaByIDResponse>
 ) {
   try {
     if (req.method !== "GET") {
@@ -27,7 +36,20 @@ export default async function getCapaByIdHandler(
 
     const capa = await prisma.capa.findFirst({
       where: { id: +id, deleted_at: null },
-      include: { creator: true, editor: true },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        editor: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     if (!capa) return res.status(404).json({ message: "Capa não encontrada." });

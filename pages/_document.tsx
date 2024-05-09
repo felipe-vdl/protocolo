@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html lang="en" className="dark">
+    <Html lang="pt-br" className="dark">
       <Head />
       <body>
         <div id="modal" />
