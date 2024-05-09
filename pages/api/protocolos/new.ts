@@ -29,6 +29,7 @@ export default async function NewProtocolo(
       const {
         num_inscricao,
         assunto,
+        outro_assunto,
         anos_analise,
         nome,
         cpf,
@@ -71,7 +72,10 @@ export default async function NewProtocolo(
           num_inscricao: String(num_inscricao).toUpperCase(),
           num_processo,
           processo,
-          assunto: String(assunto).toUpperCase(),
+          assunto:
+            assunto === "Outro"
+              ? String(outro_assunto).toUpperCase()
+              : String(assunto).toUpperCase(),
           anos_analise: String(anos_analise).toUpperCase(),
           nome: String(nome).toUpperCase(),
           cpf: cpf ? String(cpf).toUpperCase() : "",

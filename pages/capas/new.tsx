@@ -28,7 +28,9 @@ const capaFormSchema = z
     observacao: z.string().optional(),
   })
   .refine(
-    (data) => data.assunto === "Outro" && data.outro_assunto.trim().length > 0,
+    (data) =>
+      (data.assunto === "Outro" && data.outro_assunto.trim().length > 0) ||
+      (data.assunto !== "Outro" && data.assunto.trim().length > 0),
     { message: "É necessário descrever o assunto." }
   );
 
@@ -203,13 +205,21 @@ const CapaCreate = ({ assuntos }: CapaCreateProps) => {
                   placeholder="Selecione o Assunto"
                   required={true}
                 >
-                  <option value="">Selecione o Assunto</option>
+                  <option className="text-black" value="">
+                    Selecione o Assunto
+                  </option>
                   {assuntos.map((assunto) => (
-                    <option value={assunto.name} key={assunto.name}>
+                    <option
+                      className="text-black"
+                      value={assunto.name}
+                      key={assunto.name}
+                    >
                       {assunto.name}
                     </option>
                   ))}
-                  <option value="Outro">Outro</option>
+                  <option className="text-black" value="Outro">
+                    Outro
+                  </option>
                 </select>
               </div>
               {form.assunto === "Outro" && (

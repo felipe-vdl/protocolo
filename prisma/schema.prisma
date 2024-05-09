@@ -91,7 +91,7 @@ model Capa {
 
 model Assunto {
   id             Int    @id @default(autoincrement())
-  name           String @db.Text
+  name           String @unique @db.VarChar(200)
 
   created_at     DateTime  @default(now())
   updated_at     DateTime? @updatedAt

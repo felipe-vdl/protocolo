@@ -7,7 +7,6 @@ import { prisma } from "@/db";
 import { AppNotification } from "@/types/interfaces";
 import React, { useState } from "react";
 import Head from "next/head";
-import InputMask from "react-input-mask";
 import z from "zod";
 
 interface EditCapaProps {
@@ -36,7 +35,9 @@ const editCapaFormSchema = z
     observacao: z.string().optional(),
   })
   .refine(
-    (data) => data.assunto === "Outro" && data.outro_assunto.trim().length > 0,
+    (data) =>
+      (data.assunto === "Outro" && data.outro_assunto.trim().length > 0) ||
+      (data.assunto !== "Outro" && data.assunto.trim().length > 0),
     { message: "É necessário descrever o assunto." }
   );
 
@@ -224,13 +225,21 @@ const EditCapa = ({ capa, assuntos }: EditCapaProps) => {
                   placeholder="Selecione o Assunto"
                   required={true}
                 >
-                  <option value="">Selecione o Assunto</option>
+                  <option className="text-black" value="">
+                    Selecione o Assunto
+                  </option>
                   {assuntos.map((assunto) => (
-                    <option value={assunto.name} key={assunto.name}>
+                    <option
+                      className="text-black"
+                      value={assunto.name}
+                      key={assunto.name}
+                    >
                       {assunto.name}
                     </option>
                   ))}
-                  <option value="Outro">Outro</option>
+                  <option className="text-black" value="Outro">
+                    Outro
+                  </option>
                 </select>
               </div>
               {form.assunto === "Outro" && (

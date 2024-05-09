@@ -1,4 +1,4 @@
-import { Protocolo, User } from "@prisma/client";
+import { Assunto, Protocolo, User } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { GetServerSideProps } from "next";
 import { authOptions } from "../../api/auth/[...nextauth]";
@@ -15,6 +15,7 @@ interface EditProtocoloProps {
     creator: User;
     editor?: User;
   };
+  assuntos: Assunto[];
 }
 
 interface UpdateProtocoloResponse {
@@ -24,35 +25,43 @@ interface UpdateProtocoloResponse {
   };
 }
 
-const editProtocoloFormSchema = z.object({
-  num_inscricao: z.string().optional(),
-  assunto: z.string(),
-  anos_analise: z.string().optional(),
-  nome: z.string().min(1, "Informe um nome."),
-  cpf: z.union([
-    z.string().length(0, "CPF Inválido"),
-    z.string().min(14, "CPF Inválido"),
-  ]),
-  cnpj: z.union([
-    z.string().length(0, "CNPJ Inválido"),
-    z.string().min(18, "CNPJ Inválido"),
-  ]),
-  ddd: z
-    .union([
-      z.string().length(0, "DDD Inválido"),
-      z.string().length(2, "DDD Inválido"),
-    ])
-    .optional(),
-  telefone: z
-    .union([
-      z.string().length(0, "Telefone Inválido"),
-      z.string().min(9, "Telefone Inválido"),
-    ])
-    .optional(),
-  enviar_whatsapp: z.boolean(),
-});
+const editProtocoloFormSchema = z
+  .object({
+    num_inscricao: z.string().optional(),
+    assunto: z.string(),
+    anos_analise: z.string().optional(),
+    nome: z.string().min(1, "Informe um nome."),
+    cpf: z.union([
+      z.string().length(0, "CPF Inválido"),
+      z.string().min(14, "CPF Inválido"),
+    ]),
+    cnpj: z.union([
+      z.string().length(0, "CNPJ Inválido"),
+      z.string().min(18, "CNPJ Inválido"),
+    ]),
+    ddd: z
+      .union([
+        z.string().length(0, "DDD Inválido"),
+        z.string().length(2, "DDD Inválido"),
+      ])
+      .optional(),
+    telefone: z
+      .union([
+        z.string().length(0, "Telefone Inválido"),
+        z.string().min(9, "Telefone Inválido"),
+      ])
+      .optional(),
+    enviar_whatsapp: z.boolean(),
+    outro_assunto: z.string(),
+  })
+  .refine(
+    (data) =>
+      (data.assunto === "Outro" && data.outro_assunto.trim().length > 0) ||
+      (data.assunto !== "Outro" && data.assunto.trim().length > 0),
+    { message: "É necessário descrever o assunto." }
+  );
 
-const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
+const EditProtocolo = ({ protocolo, assuntos }: EditProtocoloProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const notificationInitialState: AppNotification = { message: "", type: "" };
   const [notification, setNotification] = useState<AppNotification>(
@@ -64,7 +73,14 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
   const formInitialState = {
     ddd: protocolo.telefone.slice(2, 4),
     num_inscricao: protocolo.num_inscricao,
-    assunto: protocolo.assunto,
+    assunto: assuntos.some((assunto) => assunto.name === protocolo.assunto)
+      ? protocolo.assunto
+      : "Outro",
+    outro_assunto: !assuntos.some(
+      (assunto) => assunto.name === protocolo.assunto
+    )
+      ? protocolo.assunto
+      : "",
     anos_analise: protocolo.anos_analise,
     nome: protocolo.nome,
     cpf: protocolo.cpf,
@@ -201,7 +217,9 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
     }
   };
 
-  const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    evt: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
   };
 
@@ -279,18 +297,48 @@ const EditProtocolo = ({ protocolo }: EditProtocoloProps) => {
                 />
               </div>
               <div className="flex flex-col">
-                <label htmlFor="assunto">Assunto:</label>
-                <input
+                <label htmlFor="assunto">Assunto: *</label>
+                <select
                   id="assunto"
-                  type="text"
                   onChange={handleChange}
                   name="assunto"
                   value={form.assunto}
                   className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  placeholder="Descreva o assunto"
+                  placeholder="Selecione o Assunto"
                   required={true}
-                />
+                >
+                  <option className="text-black" value="">
+                    Selecione o Assunto
+                  </option>
+                  {assuntos.map((assunto) => (
+                    <option
+                      className="text-black"
+                      value={assunto.name}
+                      key={assunto.name}
+                    >
+                      {assunto.name}
+                    </option>
+                  ))}
+                  <option className="text-black" value="Outro">
+                    Outro
+                  </option>
+                </select>
               </div>
+              {form.assunto === "Outro" && (
+                <div className="flex flex-col">
+                  <label htmlFor="assunto">Descreva o Assunto: *</label>
+                  <input
+                    id="outro_assunto"
+                    type="text"
+                    onChange={handleChange}
+                    name="outro_assunto"
+                    value={form.outro_assunto}
+                    className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                    placeholder="Descreva o assunto."
+                    required={true}
+                  />
+                </div>
+              )}
               <div className="flex flex-col">
                 <label htmlFor="anos_analise">Anos p/ Análise:</label>
                 <input
@@ -519,9 +567,14 @@ export const getServerSideProps: GetServerSideProps<
     };
   }
 
+  const assuntos = await prisma.assunto.findMany({
+    where: { deleted_at: null },
+  });
+
   return {
     props: {
       protocolo,
+      assuntos,
     },
   };
 };

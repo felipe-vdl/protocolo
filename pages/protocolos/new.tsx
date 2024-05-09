@@ -2,12 +2,13 @@ import Head from "next/head";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { Protocolo, User } from "@prisma/client";
+import { Assunto, Protocolo, User } from "@prisma/client";
 
 import React, { useState } from "react";
 import { AppNotification } from "@/types/interfaces";
 import InputMask from "react-input-mask";
 import z from "zod";
+import { prisma } from "@/db";
 
 interface NewProtocoloResponse {
   message: string;
@@ -17,35 +18,47 @@ interface NewProtocoloResponse {
   };
 }
 
-const protocoloFormSchema = z.object({
-  num_inscricao: z.string().optional(),
-  assunto: z.string(),
-  anos_analise: z.string().optional(),
-  nome: z.string().min(1, "Informe um nome."),
-  cpf: z.union([
-    z.string().length(0, "CPF Inválido"),
-    z.string().min(14, "CPF Inválido"),
-  ]),
-  cnpj: z.union([
-    z.string().length(0, "CNPJ Inválido"),
-    z.string().min(18, "CNPJ Inválido"),
-  ]),
-  ddd: z
-    .union([
-      z.string().length(0, "DDD Inválido"),
-      z.string().length(2, "DDD Inválido"),
-    ])
-    .optional(),
-  telefone: z
-    .union([
-      z.string().length(0, "Telefone Inválido"),
-      z.string().min(9, "Telefone Inválido"),
-    ])
-    .optional(),
-  enviar_whatsapp: z.boolean(),
-});
+type NewProtocoloProps = {
+  assuntos: Assunto[];
+};
 
-const ProtocoloCreate = () => {
+const protocoloFormSchema = z
+  .object({
+    num_inscricao: z.string().optional(),
+    assunto: z.string(),
+    anos_analise: z.string().optional(),
+    nome: z.string().min(1, "Informe um nome."),
+    cpf: z.union([
+      z.string().length(0, "CPF Inválido"),
+      z.string().min(14, "CPF Inválido"),
+    ]),
+    cnpj: z.union([
+      z.string().length(0, "CNPJ Inválido"),
+      z.string().min(18, "CNPJ Inválido"),
+    ]),
+    ddd: z
+      .union([
+        z.string().length(0, "DDD Inválido"),
+        z.string().length(2, "DDD Inválido"),
+      ])
+      .optional(),
+    telefone: z
+      .union([
+        z.string().length(0, "Telefone Inválido"),
+        z.string().min(9, "Telefone Inválido"),
+      ])
+      .optional(),
+    enviar_whatsapp: z.boolean(),
+    outro_assunto: z.string(),
+  })
+  .refine(
+    (data) =>
+      (data.assunto === "Outro" && data.outro_assunto.trim().length > 0) ||
+      (data.assunto !== "Outro" && data.assunto.trim().length > 0),
+    { message: "É necessário descrever o assunto." }
+  );
+
+const ProtocoloCreate = ({ assuntos }: NewProtocoloProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const notificationInitialState: AppNotification = { message: "", type: "" };
   const [notification, setNotification] = useState<AppNotification>(
@@ -58,6 +71,7 @@ const ProtocoloCreate = () => {
     ddd: "",
     num_inscricao: "",
     assunto: "",
+    outro_assunto: "",
     anos_analise: "",
     nome: "",
     cpf: "",
@@ -171,10 +185,6 @@ const ProtocoloCreate = () => {
           type: "error",
           message: `${errors.map((err) => err.message).join(", ")}.`,
         });
-        /* setNotification({
-          type: "error",
-          message: "Preencha as informações.",
-        }); */
         setIsLoading(false);
       }
     } catch (error) {
@@ -186,7 +196,9 @@ const ProtocoloCreate = () => {
     }
   };
 
-  const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    evt: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm((st) => ({ ...st, [evt.target.name]: evt.target.value }));
   };
 
@@ -276,18 +288,48 @@ const ProtocoloCreate = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <label htmlFor="assunto">Assunto:</label>
-                <input
+                <label htmlFor="assunto">Assunto: *</label>
+                <select
                   id="assunto"
-                  type="text"
                   onChange={handleChange}
                   name="assunto"
                   value={form.assunto}
                   className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
-                  placeholder="Descreva o assunto"
+                  placeholder="Selecione o Assunto"
                   required={true}
-                />
+                >
+                  <option className="text-black" value="">
+                    Selecione o Assunto
+                  </option>
+                  {assuntos.map((assunto) => (
+                    <option
+                      className="text-black"
+                      value={assunto.name}
+                      key={assunto.name}
+                    >
+                      {assunto.name}
+                    </option>
+                  ))}
+                  <option className="text-black" value="Outro">
+                    Outro
+                  </option>
+                </select>
               </div>
+              {form.assunto === "Outro" && (
+                <div className="flex flex-col">
+                  <label htmlFor="assunto">Descreva o Assunto: *</label>
+                  <input
+                    id="outro_assunto"
+                    type="text"
+                    onChange={handleChange}
+                    name="outro_assunto"
+                    value={form.outro_assunto}
+                    className="border-b border-zinc-500 bg-transparent px-2 pb-1 outline-none"
+                    placeholder="Descreva o assunto."
+                    required={true}
+                  />
+                </div>
+              )}
               <div className="flex flex-col">
                 <label htmlFor="anos_analise">Anos p/ Análise:</label>
                 <input
@@ -483,8 +525,11 @@ export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
       props: {},
     };
   } else {
+    const assuntos = await prisma.assunto.findMany({
+      where: { deleted_at: null },
+    });
     return {
-      props: {},
+      props: { assuntos },
     };
   }
 };

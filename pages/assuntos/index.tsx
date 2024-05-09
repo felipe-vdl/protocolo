@@ -5,25 +5,25 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { prisma } from "@/db";
-import { useSession } from "next-auth/react";
 
-import { User, Capa } from "@prisma/client";
+import { User, Assunto } from "@prisma/client";
 import Head from "next/head";
 import Table from "@/components/Table/Table";
 import { createColumnHelper } from "@tanstack/react-table";
 
 import { useAtom } from "jotai";
 import { notificationAtom } from "@/components/store/store";
+import { useSession } from "next-auth/react";
+import Link from "next/dist/client/link";
 
 import { AppDialog, AppNotification } from "@/types/interfaces";
 import ConfirmationDialog from "@/components/UI/ConfirmationDialog";
 import FlyingNotification from "@/components/UI/FlyingNotification";
-import Link from "next/link";
 
 interface RowActionsProps {
-  capa: Capa & { creator: User; editor?: User };
+  assunto: Assunto & { creator: User; editor?: User };
 }
-const RowActions = ({ capa }: RowActionsProps) => {
+const RowActions = ({ assunto }: RowActionsProps) => {
   const [notification, setNotification] = useAtom(notificationAtom);
   const { data: session } = useSession();
 
@@ -51,14 +51,10 @@ const RowActions = ({ capa }: RowActionsProps) => {
     });
   };
 
-  const handlePrint = () => {
-    // print capa.id
-  };
-
   const handleDeactivate = async () => {
     try {
       setDialog(dialogInitialState);
-      const response = await fetch(`/api/capas/${capa.id}/deactivate`, {
+      const response = await fetch(`/api/assuntos/${assunto.id}/deactivate`, {
         method: "POST",
       });
 
@@ -78,10 +74,10 @@ const RowActions = ({ capa }: RowActionsProps) => {
 
   return (
     <div className="flex justify-start gap-2">
-      <button
-        className="ratio-square rounded bg-blue-500 p-2 text-white transition-colors hover:bg-blue-700"
-        title="Imprimir capa."
-        onClick={handlePrint}
+      <Link
+        href={`/assuntos/${assunto.id}/edit`}
+        className="ratio-square rounded bg-yellow-500 p-2 text-white transition-colors hover:bg-yellow-700"
+        title={`Editar informações da assunto.`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -90,35 +86,19 @@ const RowActions = ({ capa }: RowActionsProps) => {
           fill="currentColor"
           viewBox="0 0 16 16"
         >
-          <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z" />
-          <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+          <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
         </svg>
-      </button>
+      </Link>
       {session && session.user.role === "SUPERADMIN" && (
         <>
-          <Link
-            href={`/capas/${capa.id}/edit`}
-            className="ratio-square rounded bg-yellow-500 p-2 text-white transition-colors hover:bg-yellow-700"
-            title={`Editar informações do capa.`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
-            </svg>
-          </Link>
-          {!capa.deleted_at ? (
+          {!assunto.deleted_at ? (
             <button
               className="ratio-square rounded bg-red-500 p-2 text-white transition-colors hover:bg-red-700"
-              title={`Arquivar o capa.`}
+              title={`Arquivar o assunto.`}
               onClick={() =>
                 handleConfirmation(
                   handleDeactivate,
-                  "Você está prestes a arquivar o capa."
+                  "Você está prestes a arquivar o assunto."
                 )
               }
             >
@@ -142,11 +122,11 @@ const RowActions = ({ capa }: RowActionsProps) => {
           ) : (
             <button
               className="ratio-square rounded bg-green-500 p-2 text-white transition-colors hover:bg-green-700"
-              title={`Desarquivar o capa.`}
+              title={`Desarquivar o assunto.`}
               onClick={() =>
                 handleConfirmation(
                   handleDeactivate,
-                  "Você está prestes a desarquivar o capa."
+                  "Você está prestes a desarquivar o assunto."
                 )
               }
             >
@@ -181,61 +161,20 @@ const RowActions = ({ capa }: RowActionsProps) => {
   );
 };
 
-interface CapaIndexProps {
-  capas: (Capa & { creator: User; editor?: User })[];
+interface AssuntoIndexProps {
+  assuntos: (Assunto & { creator: User; editor?: User })[];
 }
-const CapaIndex = ({ capas }: CapaIndexProps) => {
+const AssuntoIndex = ({ assuntos }: AssuntoIndexProps) => {
   const columnHelper = createColumnHelper<
-    Capa & { creator: User; editor?: User }
+    Assunto & { creator: User; editor?: User }
   >();
   const columns = [
-    columnHelper.accessor("num_protocolo", {
-      header: "N° do Protocolo",
-      cell: (info) => info.getValue(),
-      sortingFn: "alphanumeric",
-      filterFn: "includesString",
-      size: 92,
-    }),
-    columnHelper.accessor(
-      (row) =>
-        row.distribuicao.toLocaleDateString("pt-br", {
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-        }),
-      {
-        id: "distribuicao",
-        header: "Distribuição",
-        cell: (info) => info.getValue().replace(",", "").split(" ")[0],
-        sortingFn: "stringDate",
-        sortDescFirst: true,
-        filterFn: "includesString",
-        size: 107,
-      }
-    ),
-    columnHelper.accessor("volume", {
-      header: "Volume",
-      cell: (info) => info.getValue(),
-      sortingFn: "alphanumeric",
-      filterFn: "includesString",
-    }),
-    columnHelper.accessor("requerente", {
-      header: "Requerente",
-      cell: (info) => info.getValue(),
-      sortingFn: "alphanumeric",
-      filterFn: "includesString",
-    }),
-    columnHelper.accessor("assunto", {
+    columnHelper.accessor("name", {
       header: "Assunto",
       cell: (info) => info.getValue(),
       sortingFn: "alphanumeric",
       filterFn: "includesString",
-    }),
-    columnHelper.accessor("observacao", {
-      header: "Observação",
-      cell: (info) => info.getValue(),
-      sortingFn: "alphanumeric",
-      filterFn: "includesString",
+      size: 92,
     }),
     columnHelper.accessor(
       (row) =>
@@ -257,7 +196,7 @@ const CapaIndex = ({ capas }: CapaIndexProps) => {
     columnHelper.display({
       id: "actions",
       header: "Ações",
-      cell: (props) => <RowActions capa={props.row.original} />,
+      cell: (props) => <RowActions assunto={props.row.original} />,
       size: 70,
     }),
   ];
@@ -267,7 +206,7 @@ const CapaIndex = ({ capas }: CapaIndexProps) => {
   return (
     <>
       <Head>
-        <title>Capas Arquivadas</title>
+        <title>Lista de Assuntos</title>
         <meta
           name="description"
           content="Sistema Gerenciador de Projetos — Prefeitura de Mesquita."
@@ -276,9 +215,9 @@ const CapaIndex = ({ capas }: CapaIndexProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="w-full">
-        <h1 className="text-center text-xl font-bold">Capas Arquivadas</h1>
-        <Table<Capa & { creator: User; editor?: User }>
-          data={capas}
+        <h1 className="text-center text-xl font-bold">Assuntos</h1>
+        <Table<Assunto & { creator: User; editor?: User }>
+          data={assuntos}
           columns={columns}
         />
       </div>
@@ -287,7 +226,7 @@ const CapaIndex = ({ capas }: CapaIndexProps) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<CapaIndexProps> = async (
+export const getServerSideProps: GetServerSideProps<AssuntoIndexProps> = async (
   context
 ) => {
   const session = await getServerSession(context.req, context.res, authOptions);
@@ -300,30 +239,17 @@ export const getServerSideProps: GetServerSideProps<CapaIndexProps> = async (
       },
       props: {},
     };
-  } else if (session.user.role !== "SUPERADMIN") {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/",
-      },
-      props: {},
-    };
   } else {
-    const capas = await prisma.capa.findMany({
+    const assuntos = await prisma.assunto.findMany({
       include: { creator: true, editor: true },
-      where: {
-        NOT: {
-          deleted_at: null,
-        },
-      },
     });
     return {
       props: {
-        capas,
+        assuntos,
       },
     };
   }
 };
 
-CapaIndex.layout = "dashboard";
-export default CapaIndex;
+AssuntoIndex.layout = "dashboard";
+export default AssuntoIndex;
