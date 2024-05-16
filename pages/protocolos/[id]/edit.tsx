@@ -569,6 +569,9 @@ export const getServerSideProps: GetServerSideProps<
 
   const assuntos = await prisma.assunto.findMany({
     where: { deleted_at: null },
+    orderBy: {
+      name: "asc",
+    },
   });
 
   return {

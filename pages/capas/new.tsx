@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { AppNotification } from "@/types/interfaces";
 import z from "zod";
 import { prisma } from "@/db";
+import { printCapa } from "@/lib/capas";
 
 interface NewCapaResponse {
   message: string;
@@ -84,8 +85,7 @@ const CapaCreate = ({ assuntos }: CapaCreateProps) => {
         setIsLoading(false);
 
         if (submitter.value === "PRINT") {
-          // print capa
-          console.log(capa);
+          printCapa(capa);
         }
       } else if (result.success === false) {
         const { errors } = result.error;
@@ -312,6 +312,9 @@ export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
   } else {
     const assuntos = await prisma.assunto.findMany({
       where: { deleted_at: null },
+      orderBy: {
+        name: "asc",
+      },
     });
 
     return {

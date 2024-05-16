@@ -8,6 +8,7 @@ import { AppNotification } from "@/types/interfaces";
 import React, { useState } from "react";
 import Head from "next/head";
 import z from "zod";
+import { printCapa } from "@/lib/capas";
 
 interface EditCapaProps {
   capa: Capa & {
@@ -112,7 +113,7 @@ const EditCapa = ({ capa, assuntos }: EditCapaProps) => {
         setIsLoading(false);
 
         if (submitter.value === "PRINT") {
-          // print capa
+          printCapa(capa);
         }
       }
     } catch (error) {
@@ -367,6 +368,9 @@ export const getServerSideProps: GetServerSideProps<EditCapaProps> = async (
 
   const assuntos = await prisma.assunto.findMany({
     where: { deleted_at: null },
+    orderBy: {
+      name: "asc",
+    },
   });
 
   return {

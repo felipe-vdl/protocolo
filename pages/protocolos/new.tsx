@@ -527,6 +527,9 @@ export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
   } else {
     const assuntos = await prisma.assunto.findMany({
       where: { deleted_at: null },
+      orderBy: {
+        name: "asc",
+      }
     });
     return {
       props: { assuntos },

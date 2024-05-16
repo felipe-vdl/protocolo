@@ -19,6 +19,7 @@ import { AppDialog, AppNotification } from "@/types/interfaces";
 import ConfirmationDialog from "@/components/UI/ConfirmationDialog";
 import FlyingNotification from "@/components/UI/FlyingNotification";
 import Link from "next/link";
+import { printCapa } from "@/lib/capas";
 
 interface RowActionsProps {
   capa: Capa & { creator: User; editor?: User };
@@ -52,7 +53,7 @@ const RowActions = ({ capa }: RowActionsProps) => {
   };
 
   const handlePrint = () => {
-    // print capa.id
+    printCapa(capa);
   };
 
   const handleDeactivate = async () => {
