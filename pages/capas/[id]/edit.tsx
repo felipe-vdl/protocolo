@@ -113,7 +113,7 @@ const EditCapa = ({ capa, assuntos }: EditCapaProps) => {
         setIsLoading(false);
 
         if (submitter.value === "PRINT") {
-          printCapa(capa);
+          printCapa(updatedCapa);
         }
       }
     } catch (error) {

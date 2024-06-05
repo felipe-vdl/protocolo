@@ -20,6 +20,8 @@ import ConfirmationDialog from "@/components/UI/ConfirmationDialog";
 import FlyingNotification from "@/components/UI/FlyingNotification";
 import Link from "next/link";
 import { printCapa } from "@/lib/capas";
+import { addHours, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface RowActionsProps {
   capa: Capa & { creator: User; editor?: User };
@@ -197,23 +199,18 @@ const CapaIndex = ({ capas }: CapaIndexProps) => {
       filterFn: "includesString",
       size: 92,
     }),
-    columnHelper.accessor(
-      (row) =>
-        row.distribuicao.toLocaleDateString("pt-br", {
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
+    columnHelper.accessor((row) => row.distribuicao, {
+      id: "distribuicao",
+      header: "Distribuição",
+      cell: (info) =>
+        format(addHours(info.getValue(), 3), "dd/MM/yyyy", {
+          locale: ptBR,
         }),
-      {
-        id: "distribuicao",
-        header: "Distribuição",
-        cell: (info) => info.getValue().replace(",", "").split(" ")[0],
-        sortingFn: "stringDate",
-        sortDescFirst: true,
-        filterFn: "includesString",
-        size: 107,
-      }
-    ),
+      sortingFn: "stringDate",
+      sortDescFirst: true,
+      filterFn: "includesString",
+      size: 107,
+    }),
     columnHelper.accessor("volume", {
       header: "Volume",
       cell: (info) => info.getValue(),

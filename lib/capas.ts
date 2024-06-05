@@ -1,4 +1,5 @@
 import { Capa } from "@prisma/client";
+import { addHours, format } from "date-fns";
 
 export function printCapa(capa: Capa) {
   let win = window.open();
@@ -9,9 +10,10 @@ export function printCapa(capa: Capa) {
                 <p style="margin: 0.5rem; margin-left: 3rem; text-align: start; font-size: 16px;"><b>PROTOCOLO N°:</b> <span>${
                   capa.num_protocolo
                 }</span></p>
-                <p style="margin: 0.5rem; margin-left: 3rem; text-align: start; font-size: 16px;"><b>DISTRIBUIÇÃO:</b> <span>${new Date(
-                  capa.distribuicao
-                ).toLocaleDateString("pt-br")}</span></p>
+                <p style="margin: 0.5rem; margin-left: 3rem; text-align: start; font-size: 16px;"><b>DISTRIBUIÇÃO:</b> <span>${format(
+                  addHours(new Date(capa.distribuicao), 3),
+                  "dd/MM/yyyy"
+                )}</span></p>
                 <p style="margin-top: 2rem; text-align: start; font-size: 24px; font-weight: bold; align-self:center;">PREFEITURA MUNICIPAL DE MESQUITA</p>
                 <img src="" alt="Logo" width="128" height="128" style="align-self: center; margin-top: 0.25rem; margin-bottom: 5rem;">
                 <p style="margin: 1rem; border: 1px solid black; padding: 1rem; padding-top: 0.5rem; padding-left: 0.5rem; text-align: start; font-size: 16px;"><b>VOLUME:</b> <span>${
