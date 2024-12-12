@@ -80,6 +80,8 @@ export const sendWhatsApp = async (protocolo: Protocolo) => {
   });
 
   if (!res.ok) {
+    console.log("!ok", res);
+
     const data = await res.json();
     throw new Error(data);
   }
