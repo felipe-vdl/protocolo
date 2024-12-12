@@ -5,7 +5,6 @@ import { prisma } from "../../../db";
 
 import { Message } from "@/types/interfaces";
 import { Protocolo } from "@prisma/client";
-import { Agent, setGlobalDispatcher } from "undici";
 
 export default async function SendWhatsApp(
   req: NextApiRequest,
@@ -61,14 +60,6 @@ export const sendWhatsApp = async (protocolo: Protocolo) => {
     data: protocolo.created_at.toLocaleDateString("pt-BR"),
   };
   console.log(protocoloInfo);
-
-  const agent = new Agent({
-    connect: {
-      rejectUnauthorized: false,
-    },
-  });
-
-  setGlobalDispatcher(agent);
 
   const res = await fetch(process.env.WHATSAPP_API_URL, {
     method: "POST",
