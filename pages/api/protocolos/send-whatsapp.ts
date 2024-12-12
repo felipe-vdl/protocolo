@@ -98,6 +98,5 @@ export const sendWhatsApp = async (protocolo: Protocolo) => {
     return data;
   } catch (error) {
     console.error(error);
-    throw error;
   }
 };
