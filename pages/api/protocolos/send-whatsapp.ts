@@ -47,46 +47,57 @@ export default async function SendWhatsApp(
 }
 
 export const sendWhatsApp = async (protocolo: Protocolo) => {
-  const protocoloInfo = {
-    inscricao: protocolo.num_inscricao
-      ? protocolo.num_inscricao
-      : "Não se aplica",
-    processo: protocolo.processo,
-    assunto: protocolo.assunto,
-    analise: protocolo.anos_analise ? protocolo.anos_analise : "Não se aplica",
-    nome: protocolo.nome,
-    cpf: protocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
-    whatsapp: protocolo.telefone.replaceAll("-", ""),
-    data: protocolo.created_at.toLocaleDateString("pt-BR"),
-  };
-  console.log(protocoloInfo);
+  try {
+    const protocoloInfo = {
+      inscricao: protocolo.num_inscricao
+        ? protocolo.num_inscricao
+        : "Não se aplica",
+      processo: protocolo.processo,
+      assunto: protocolo.assunto,
+      analise: protocolo.anos_analise
+        ? protocolo.anos_analise
+        : "Não se aplica",
+      nome: protocolo.nome,
+      cpf: protocolo.cpf.replaceAll(".", "").replaceAll("-", ""),
+      whatsapp: protocolo.telefone.replaceAll("-", ""),
+      data: protocolo.created_at.toLocaleDateString("pt-BR"),
+    };
+    console.log(protocoloInfo);
 
-  const res = await fetch(process.env.WHATSAPP_API_URL, {
-    method: "POST",
-    body: JSON.stringify(protocoloInfo),
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.WHATSAPP_API_KEY,
-    },
-  });
+    const res = await fetch(process.env.WHATSAPP_API_URL, {
+      method: "POST",
+      body: JSON.stringify(protocoloInfo),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "x-api-key": process.env.WHATSAPP_API_KEY,
+      },
+    });
 
-  if (!res.ok) {
-    console.log("!ok", res);
+    if (!res.ok) {
+      console.log("!ok", res);
+
+      const text = await res.text();
+      console.log(text);
+
+      const data = await res.json();
+      throw new Error(data);
+    }
+
+    const updateProtocolo = await prisma.protocolo.update({
+      where: {
+        id: protocolo.id,
+      },
+      data: {
+        whatsapp_enviado: true,
+      },
+    });
 
     const data = await res.json();
-    throw new Error(data);
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-
-  const updateProtocolo = await prisma.protocolo.update({
-    where: {
-      id: protocolo.id,
-    },
-    data: {
-      whatsapp_enviado: true,
-    },
-  });
-
-  const data = await res.json();
-  console.log(data);
-  return data;
 };
